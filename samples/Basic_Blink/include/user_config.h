@@ -35,6 +35,7 @@ extern "C" {
 // Network base API
 #include <espinc/lwip_includes.h>
 
+#define COM_SPEED_SERIAL 11520
 #ifdef __cplusplus
 }
 #endif

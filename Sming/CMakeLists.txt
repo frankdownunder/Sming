@@ -3,6 +3,11 @@
 #=============================================================================#
 cmake_minimum_required(VERSION 3.5)
 project(sming C CXX ASM)
+# The version number.
+set (VERSION_MAJOR 3)
+set (VERSION_MINOR 8)
+set (VERSION_POINT 1)
+
 
 #=============================================================================#
 #                         System Paths, compiler and config
@@ -25,6 +30,12 @@ set(CMAKE_CXX_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-g++)
 set(CMAKE_C_COMPILER   $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc)
 set(CMAKE_ASM_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc)
 
+# TODO set compilers better
+#set(CMAKE_C_COMPILER "${TOOLCHAIN_BIN}/${TARGET_TRIPLET}-gcc${SYSTEM_EXTENSION}")
+#set(CMAKE_CXX_COMPILER "${TOOLCHAIN_BIN}/${TARGET_TRIPLET}-g++${SYSTEM_EXTENSION}")
+#set(CMAKE_ASM_COMPILER "${TOOLCHAIN_BIN}/${TARGET_TRIPLET}-gcc${SYSTEM_EXTENSION}")
+
+
 # supress compiler checking
 set(CMAKE_C_COMPILER_WORKS 1)
 set(CMAKE_CXX_COMPILER_WORKS 1)
@@ -39,17 +50,18 @@ set(CMAKE_ASM_COMPILER_WORKS 1)
 #add_library(sming STATIC ${COMPONENT_SRCS})
 
 
-message("CMAKE_CURRENT_SOURCE_DIR2=${CMAKE_CURRENT_SOURCE_DIR}")
-
 set(CMAKE_SYSTEM_NAME ESP8266)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 
 # esp8266 compiler triplet name
-set(TARGET_TRIPLET xtensa-lx106-elf)
+#set(TARGET_TRIPLET xtensa-lx106-elf)
+
 # flash size
 set(FLASH_SIZE 4m)
+
 # system magic, detect arduino dir and system extension
+# TODO - detect toolchain perhaps?  Is it useful to know where the arduino folders are?
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
     set(USER_HOME $ENV{HOME})
     set(SYSTEM_EXTENSION "")
@@ -95,7 +107,7 @@ endif()
 #message("HARDWARE_SUBDIRS=${HARDWARE_SUBDIRS} ESP8266_LIBRARIES_ROOT=$(ESP8266_LIBRARIES_ROOT).")
 
 # esptool location
-set(ESPTOOL ${ESP_HOME}/esptool/esptool.py)
+set(ESPTOOL $ENV{ESP_HOME}/esptool/esptool.py)
 #file(GLOB ESPTOOL_SUBDIRS LIST_DIRECTORIES=TRUE "${ARDUINO_ESP8266_HOME}/tools/esptool/*")
 #list(GET ESPTOOL_SUBDIRS 0 ESPTOOL_DIR)
 #set(ESPTOOL_APP ${ESPTOOL_DIR}/esptool${SYSTEM_EXTENSION})
@@ -111,19 +123,18 @@ set(ESPTOOL ${ESP_HOME}/esptool/esptool.py)
 option (USE_ESP8266_ESP32_LINUX  "Set ESP8266 as the target(0), ESP32[unsoprted yet] (1), or Linux(2)" 0) 
 
 #Optionally suppress this feature from the code (presumably for space)
+
+option(DEBUG_VERBOSE_LEVEL  "DEBUG_VERBOSE_LEVEL (debug=3, info=2, warn=1, error=0)?" 0)
 option(ENABLE_CMD_EXECUTOR  "ENABLE_CMD_EXECUTOR (0 or 1)?" ON)
-option(ENABLE_SSL           "ENABLE_SSL (0 or 1)?" OFF)
-option(ENABLE_ESPCONN       "ENABLE_ESPCONN (0 or 1)?" OFF)
+option(ENABLE_CUSTOM_HEAP   "ENABLE_CUSTOM_HEAP (0 or 1)?" OFF)
 option(ENABLE_CUSTOM_LWIP   "ENABLE_CUSTOM_LWIP (0 or 1)?" ON)
 option(ENABLE_CUSTOM_PWM    "ENABLE_CUSTOM_PWM (0 or 1)?" ON)
-option(ENABLE_WPS           "ENABLE_WPS (0 or 1)?" OFF)
-option(ENABLE_CUSTOM_HEAP   "ENABLE_CUSTOM_HEAP (0 or 1)?" OFF)
-option(DEBUG_VERBOSE_LEVEL  "DEBUG_VERBOSE_LEVEL (debug=3, info=2, warn=1, error=0)?" 0)
-option(ENABLE_LWIPDEBUG     "ENABLE_LWIPDEBUG ()?" 0)
+option(ENABLE_ESPCONN       "ENABLE_ESPCONN (0 or 1)?" OFF)
 option(ENABLE_GDB           "ENABLE_GDB ()?" 0)
+option(ENABLE_LWIPDEBUG     "ENABLE_LWIPDEBUG ()?" 0)
+option(ENABLE_SSL           "ENABLE_SSL (0 or 1)?" OFF)
+option(ENABLE_WPS           "ENABLE_WPS (0 or 1)?" OFF)
 option(SSL_DEBUG            "SSL_DEBUG()?" 0)
-
-option(DEBUG_VERBOSE_LEVEL  "DEBUG_VERBOSE_LEVEL (0 or 1)?" ON)
 # should we target ESP8266, ESP32 or lInux?
 option (USE_ESP8266_ESP32_LINUX 
         "Set ESP8266 as the target(0), ESP32 (1), or Linux(2)" 0) 
@@ -131,47 +142,24 @@ option (USE_ESP8266_ESP32_LINUX
 set(COM_SPEED_SERIAL 11520)
 
 message("USE_ESP8266_ESP32_LINUX ${}")
+
+
+message("COM_SPEED_SERIAL     ${COM_SPEED_SERIAL}")
+message("DEBUG_VERBOSE_LEVEL  ${DEBUG_VERBOSE_LEVEL}")
 message("ENABLE_CMD_EXECUTOR  ${ENABLE_CMD_EXECUTOR}")
-message("ENABLE_SSL           ${ENABLE_SSL}")
-message("ENABLE_ESPCONN       ${ENABLE_ESPCONN}")
+message("ENABLE_CUSTOM_HEAP   ${ENABLE_CUSTOM_HEAP}")
 message("ENABLE_CUSTOM_LWIP   ${ENABLE_CUSTOM_LWIP}")
 message("ENABLE_CUSTOM_PWM    ${ENABLE_CUSTOM_PWM}")
-message("ENABLE_WPS           ${ENABLE_WPS}")
-message("ENABLE_CUSTOM_HEAP   ${ENABLE_CUSTOM_HEAP}")
-message("DEBUG_VERBOSE_LEVEL  ${DEBUG_VERBOSE_LEVEL}")
-message("ENABLE_LWIPDEBUG     ${ENABLE_LWIPDEBUG}")
+message("ENABLE_ESPCONN       ${ENABLE_ESPCONN}")
 message("ENABLE_GDB           ${ENABLE_GDB}")
-message("DEBUG_VERBOSE_LEVEL  ${DEBUG_VERBOSE_LEVEL}")
-message("COM_SPEED_SERIAL     ${COM_SPEED_SERIAL}")
-
-
-
-#link_directories( abc def)
-#    ${HARDWARE_ROOT}/tools/sdk/lib
-#    ${HARDWARE_ROOT}/tools/sdk/ld
-#    ${HARDWARE_ROOT}/tools/sdk/libc/xtensa-lx106-elf/lib
-#)
+message("ENABLE_LWIPDEBUG     ${ENABLE_LWIPDEBUG}")
+message("ENABLE_SSL           ${ENABLE_SSL}")
+message("ENABLE_WPS           ${ENABLE_WPS}")
+message("SSL_DEBUG            ${SSL_DEBUG}")
 
 
 #include($ENV{SMING_HOME}/cmake/core.cmake)
 
-
-
-#set(CMAKE_C_COMPILER xtensa-esp32-elf-gcc)
-#set(CMAKE_CXX_COMPILER xtensa-esp32-elf-g++)
-#set(CMAKE_ASM_COMPILER xtensa-esp32-elf-gcc)
-#set(CMAKE_ASM_COMPILER_ENV_VAR xtensa-esp32-elf-gcc)
-
-# C and C++ and assembler
-#project(espdf C CXX)
-
-
-
-#set(CORE_SRCS ${CORE_FOLDER}/DateTime.cpp)
-#set(LIBRARY_SRCS ${LIBRARY_FOLDER}/SparkFun_APDS9960/SparkFun_APDS9960.cpp)
-#set(ARCH_SRCS ${ARCH_FOLDER}/Core/HardwarePWM.cpp)
-#set(WIRING_SRCS ${WIRING_FOLDER}/WString.cpp)
-#set(OTHERS_SRCS)
 
 #=============================================================================#
 #                         Source files
@@ -192,12 +180,8 @@ set(COMPONENT_PRIV_INCLUDEDIRS  ${LIBRARY_FOLDER}/Adafruit_BME280_Library/src)
 
 set(include_type PUBLIC)
 
-set(ESPTOOL_APP /opt/Sming/tools/esptool.py)
+message("CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
 
-message("CMAKE_CURRENT_SOURCE_DIR1=${CMAKE_CURRENT_SOURCE_DIR}")
-
-#set(ESP_HOME /opt/esp-open-sdk)
-    
  
 #=============================================================================#
 #                         Compiler options 
@@ -205,27 +189,19 @@ message("CMAKE_CURRENT_SOURCE_DIR1=${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Note its better to use target_compile_options, than to set CMAKE_CXX_FLAGS directly
 set(WARNNGS -Wall -Werror -Wl,-EL -Wpointer-arith -Wno-comment -Wno-maybe-uninitialized -Wno-parentheses -Wno-return-type -Wno-sign-compare -Wno-strict-aliasing -Wno-unused-but-set-variable -Wno-unused-variable -Wpointer-arith -Wundef)
-set(COMMON_FLAGS -w )
-set(CPLUSPLUSONLY_FLAGS -g -mlongcalls -Os -ffunction-sections -fdata-sections -MMD -mtext-section-literals -falign-functions=4)
+set(COMMON_FLAGS -w -M)
+set(CPLUSPLUSONLY_FLAGS -std=c++11 -g -mlongcalls -Os -ffunction-sections -fdata-sections -mtext-section-literals -falign-functions=4)
+
+#string (REPLACE ";" " " COMMON_FLAGS "${COMMON_FLAGSLIST}")
+#set(CONLY_FLAGS         -DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))")
 
 #TODO Move these into target_compile_options
-set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wno-implicit-function-declaration -Wl,-EL -fno-inline-functions -nostdlib ${COMMON_FLAGS} -std=gnu99")
-set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -x assembler-with-cpp ${COMMON_FLAGS}")
+set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wno-implicit-function-declaration -Wl,-EL -fno-inline-functions -nostdlib -std=gnu99")
+set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -x assembler-with-cpp ")
 set(CMAKE_EXE_LINKER_FLAGS
         "${CMAKE_EXE_LINKER_FLAGS} -L/opt/Sming/Sming/Arch/Esp8266/Compiler/ld -L/opt/Sming/Sming/Arch/Esp8266/Components/rboot/rboot -L/opt/Sming/Sming/Arch/Esp8266/Compiler/lib -L/opt/Sming/Sming/Arch/Esp8266/Components/Sdk/ESP8266_NONOS_SDK/lib -Lout/build -nostdlib -Wl,--no-check-sections -u call_user_start -u _printf_float -u _scanf_float -Wl,-static -T/opt/Sming/Sming/Arch/Esp8266/Compiler/ld/rboot.rom0.ld  -Wl,--gc-sections -Wl,-wrap,system_restart_local ")
 
-if(ENABLE_GDB)
-        #set(COMMON_FLAGS ${COMMON_FLAGS} -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0)
-        message("ENABLE_GDB - true")
-else()
-        #set(COMMON_FLAGS ${COMMON_FLAGS} -Os -O3)
-        message("ENABLE_GDB - false")
-endif()
 
-# set compilers
-#set(CMAKE_C_COMPILER "${TOOLCHAIN_BIN}/${TARGET_TRIPLET}-gcc${SYSTEM_EXTENSION}")
-#set(CMAKE_CXX_COMPILER "${TOOLCHAIN_BIN}/${TARGET_TRIPLET}-g++${SYSTEM_EXTENSION}")
-#set(CMAKE_ASM_COMPILER "${TOOLCHAIN_BIN}/${TARGET_TRIPLET}-gcc${SYSTEM_EXTENSION}")
 
 
 # CMAKE_C_COMPILER is not mistake, gcc for all, not g++
@@ -241,54 +217,53 @@ set(CMAKE_C_LINK_EXECUTABLE
 #=============================================================================#
 
 add_library(sming STATIC               ${COMPONENT_ASM_SRCS} )
-target_sources(${PROJECT_NAME} PRIVATE ${COMPONENT_C_SRCS} )
-target_sources(${PROJECT_NAME} PRIVATE ${COMPONENT_SRCS})
+
+if(false)
+    target_sources(${PROJECT_NAME} PRIVATE ${OTHERS_FOLDER}/Components/http-parser/http_parser.c)
+    target_sources(${PROJECT_NAME} PRIVATE ${CORE_FOLDER}/DateTime.cpp)
+else()
+    target_sources(${PROJECT_NAME} PRIVATE ${COMPONENT_C_SRCS} )
+    target_sources(${PROJECT_NAME} PRIVATE ${COMPONENT_SRCS})
+endif()
 
 set_property(TARGET sming PROPERTY OUTPUT_NAME sming)
 
 
 # esp8266 include directories
 target_include_directories(sming PUBLIC
-        #${HARDWARE_ROOT}/tools/sdk/include
-        #${HARDWARE_ROOT}/tools/sdk/lwip2/include
-        #${HARDWARE_ROOT}/tools/sdk/libc/xtensa-lx106-elf/include
-        #${HARDWARE_ROOT}/cores/esp8266
-        #${HARDWARE_ROOT}/variants/d1_mini
-        #include
         ${SmingIncludes}
         )
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED on)
+
 # and esp8266 build definitions
 target_compile_definitions(sming PUBLIC
-        # I cant get PROGMEM_L32 to work:                                
+        # I cant get PROGMEM_L32 to work here, (set copiler flags instead as a workaround):                                
         #-DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))" )
-        -DPROGMEM_L32=
         -D__ets__ 
-        -DARDUINO_ARCH_ESP8266
-        -DARDUINO_ESP8266_GENERIC  
         -DARDUINO=106
-        -DCUST_FILE_BASE=Print              # What is this for?
+        -DCOM_SPEED_SERIAL=11520
         -DDEBUG_PRINT_FILENAME_AND_LINE=0 
         -DDEBUG_VERBOSE_LEVEL=2 
         -DENABLE_CMD_EXECUTOR=1 
         -DESP8266=1 
+        -DF_CPU=80000000L
+        -DFLASHMODE_DOUT
         -DICACHE_FLASH 
+        -DLED_BUILTIN=2
+        -DLWIP_FEATURES=1
+        -DLWIP_IPV6=0
+        -DLWIP_OPEN_SRC
         -DSDK_INTERNAL 
         -DSDK_PWM_PERIOD_COMPAT_MODE=1 
-        -DCOM_SPEED_SERIAL=11520
         -DSMING_INCLUDED=1 
-        -DUSE_OPTIMIZE_PRINTF
-
-        -DF_CPU=80000000L 
-        -DFLASHMODE_DOUT 
-        -DLED_BUILTIN=2 
-        -DLWIP_FEATURES=1 
-        -DLWIP_IPV6=0 
-        -DLWIP_OPEN_SRC 
-        -DSDK_INTERNAL 
-        -DSDK_PWM_PERIOD_COMPAT_MODE=1 
         -DTCP_MSS=536  
+        -DUSE_OPTIMIZE_PRINTF   #// defined in user_config.h so dont need it here?
         )
+        #-DARDUINO_ARCH_ESP8266
+        #-DARDUINO_ESP8266_GENERIC  
+        #-DCUST_FILE_BASE=Print              # What is this for?
         #@-DARDUINO_ARCH_ESP8266 \"-DARDUINO_BOARD=\"ESP8266_GENERIC\"\" 
         #@-DARDUINO_BOARD="ESP8266_WEMOS_D1MINI"
         #-DARDUINO_ESP8266_WEMOS_D1MINI
@@ -337,15 +312,26 @@ target_compile_options(sming PUBLIC $<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>)
 
 target_compile_options(sming PUBLIC -fno-exceptions )
 target_compile_options(sming PUBLIC -fno-rtti )
-target_compile_options(sming PUBLIC -std=c++11 )
-target_compile_options(sming PUBLIC ${WARNNGS} ${COMMON_FLAGS} )
-target_compile_options(sming PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${CPLUSPLUSONLY_FLAGS}> )
 
-target_link_libraries(sming PUBLIC microc microgcc hal phy pp net80211 mqttc wpa crypto lwip_open main wps espnow smartconfig airkiss wpa2 stdc++ m c gcc)
+target_compile_options(sming PUBLIC ${WARNNGS} )
+target_compile_options(sming PUBLIC ${COMMON_FLAGS} )
+target_compile_options(sming PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${CPLUSPLUSONLY_FLAGS}> )
+# Setting the compiier option for PROGMEM was really difficult,especially using target_compile_options.
+# Brackets spaces and  quotes are all problematic for cmake strings and lists.
+set(PROGMEM_FLAGS "-DPROGMEM_L32=\"__attribute__((aligned(4)))  __attribute__((section(\\\".irom.text\\\")))\" "    )
+message(PROGMEM_FLAGS)
+message(${PROGMEM_FLAGS})
+set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} ${PROGMEM_FLAGS}")
+set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} ${PROGMEM_FLAGS}")
+message(${CMAKE_CXX_FLAGS})
+#target_compile_options(sming PUBLIC [=[-DPROGMEM_L32="__attribute__((aligned(4)))]=] [=[__attribute__((section(\".irom.text\")))"]=])
+
+
+#target_link_libraries(sming PUBLIC microc microgcc hal phy pp net80211 mqttc wpa crypto lwip_open main wps espnow smartconfig airkiss wpa2 stdc++ m c gcc)
 
 
 #I dont think we need this,
-message("Supported features (current compiler) = ${CMAKE_CXX_COMPILE_FEATURES}")
+#message("Supported features (current compiler) = ${CMAKE_CXX_COMPILE_FEATURES}")
 target_compile_features(sming
     PUBLIC
         cxx_variadic_templates
@@ -354,7 +340,27 @@ target_compile_features(sming
         cxx_lambdas
 )
 
+set(ARG_CACHE_FILE  "${PROJECT_SOURCE_DIR}/BuildNumberCache.txt")
+set(ARG_HEADER_FILE "${PROJECT_BINARY_DIR}/BuildNumber.h")
 
+add_custom_command(
+    TARGET sming
+    PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} 
+        -D ARG_CACHE_FILE=${ARG_CACHE_FILE} -DARG_HEADER_FILE=${ARG_HEADER_FILE}
+        -P "/opt/Sming/Sming/cmake/autoIncrementScript.cmake"
+)
+
+
+# configure a header file to pass some of the CMake settings
+# to the source code
+configure_file (
+  "${PROJECT_SOURCE_DIR}/options.h.in"
+  "${PROJECT_BINARY_DIR}/options.h"
+  )
+# add the binary tree to the search path for include files
+# so that we will find options.h
+include_directories("${PROJECT_BINARY_DIR}")
 
 #axtls lwip2-536-feat bearssl 
 
@@ -368,3 +374,5 @@ target_compile_features(sming
 #        COMMAND ${ESPTOOL_APP} -eo ${HARDWARE_ROOT}/bootloaders/eboot/eboot.elf -bo $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}.bin -bm dio -bf 40 -bz 4M -bs .text -bp 4096 -ec -eo $<TARGET_FILE:${PROJECT_NAME}> -bs .irom0.text -bs .text -bs .data -bs .rodata -bc -ec
 #        COMMENT "Building ${PROJECT_NAME}> bin file")
 
+#set(ll 123  -DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))" ))
+#message(ll)
