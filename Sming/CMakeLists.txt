@@ -30,6 +30,11 @@ set(CMAKE_CXX_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-g++)
 set(CMAKE_C_COMPILER   $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc)
 set(CMAKE_ASM_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc)
 
+SET(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> cru <TARGET>  <OBJECTS>")
+SET(CMAKE_C_ARCHIVE_CREATE   "<CMAKE_AR> cru <TARGET>  <OBJECTS>")
+
+
+
 # TODO set compilers better
 #set(CMAKE_C_COMPILER "${TOOLCHAIN_BIN}/${TARGET_TRIPLET}-gcc${SYSTEM_EXTENSION}")
 #set(CMAKE_CXX_COMPILER "${TOOLCHAIN_BIN}/${TARGET_TRIPLET}-g++${SYSTEM_EXTENSION}")
@@ -189,7 +194,7 @@ message("CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Note its better to use target_compile_options, than to set CMAKE_CXX_FLAGS directly
 set(WARNNGS -Wall -Werror -Wl,-EL -Wpointer-arith -Wno-comment -Wno-maybe-uninitialized -Wno-parentheses -Wno-return-type -Wno-sign-compare -Wno-strict-aliasing -Wno-unused-but-set-variable -Wno-unused-variable -Wpointer-arith -Wundef)
-set(COMMON_FLAGS -w -M)
+set(COMMON_FLAGS -w )
 set(CPLUSPLUSONLY_FLAGS -std=c++11 -g -mlongcalls -Os -ffunction-sections -fdata-sections -mtext-section-literals -falign-functions=4)
 
 #string (REPLACE ";" " " COMMON_FLAGS "${COMMON_FLAGSLIST}")
@@ -216,7 +221,7 @@ set(CMAKE_C_LINK_EXECUTABLE
 #                         Targets and dependencies
 #=============================================================================#
 
-add_library(sming STATIC               ${COMPONENT_ASM_SRCS} )
+add_library(sming  ${COMPONENT_ASM_SRCS} )
 
 if(false)
     target_sources(${PROJECT_NAME} PRIVATE ${OTHERS_FOLDER}/Components/http-parser/http_parser.c)
@@ -355,17 +360,19 @@ add_custom_command(
 # configure a header file to pass some of the CMake settings
 # to the source code
 configure_file (
-  "${PROJECT_SOURCE_DIR}/options.h.in"
-  "${PROJECT_BINARY_DIR}/options.h"
+  "${PROJECT_SOURCE_DIR}/Options.h.in"
+  "${PROJECT_SOURCE_DIR}/Core/Options.h"
   )
 # add the binary tree to the search path for include files
-# so that we will find options.h
-include_directories("${PROJECT_BINARY_DIR}")
+# so that we will find any generacted files in there.
+# But there arent nany at present
+#include_directories("${PROJECT_BINARY_DIR}")
+
 
 #axtls lwip2-536-feat bearssl 
 
 
-# When buuilding the executable....
+# When building the executable....
 # Append sming library as part of target executable
 #target_link_libraries(${PROJECT_NAME} PUBLIC sming)
 

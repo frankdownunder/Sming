@@ -11,7 +11,7 @@
 #pragma once
 
 //#define SMING_VERSION "3.8.0" // Major Minor Sub
-#include "options.h"	//  VERSION_MAJOR VERSION_MINOR VERSION_POINT 
+#include "Options.h"	//  VERSION_MAJOR VERSION_MINOR VERSION_POINT 
 
 #include <functional>
 

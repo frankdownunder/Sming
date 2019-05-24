@@ -16,7 +16,7 @@
 #include "WString.h"
 #include "IPAddress.h"
 
-#include "options.h"
+#include "Options.h"
 
 #ifdef DEBUG_TCP_EXTENDED
 #define debug_tcp(fmt, ...) debug_d(fmt, ##__VA_ARGS__)
