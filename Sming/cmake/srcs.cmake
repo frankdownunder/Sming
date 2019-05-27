@@ -2,6 +2,8 @@ set(CORE_FOLDER /opt/Sming/Sming/Core
     #PARENT_SCOPE
     )
 set(CORE_SRCS
+    ${CORE_FOLDER}/Clock.cpp
+    ${CORE_FOLDER}/HardwareSerial.cpp
     ${CORE_FOLDER}/DateTime.cpp
     ${CORE_FOLDER}/Timer.cpp
     ${CORE_FOLDER}/AtClient.cpp
@@ -195,21 +197,17 @@ set(ARCH_SRCS
     ${ARCH_FOLDER}/Core/Interrupts.cpp
     ${ARCH_FOLDER}/Core/Digital.cpp
     ${ARCH_FOLDER}/Core/core_esp8266_si2c.cpp
-    ${ARCH_FOLDER}/Core/Clock.cpp
     ${ARCH_FOLDER}/Core/HardwareTimer.cpp
-    ${ARCH_FOLDER}/Core/HardwareSerial.cpp
     ${ARCH_FOLDER}/Core/SPI.cpp
     ${ARCH_FOLDER}/Core/Network/rBootHttpUpdate.cpp
     ${ARCH_FOLDER}/Platform/RTC.cpp
-    ${ARCH_FOLDER}/Platform/WDT.cpp
     ${ARCH_FOLDER}/Platform/Station.cpp
     ${ARCH_FOLDER}/Platform/WifiSniffer.cpp
     ${ARCH_FOLDER}/Platform/AccessPoint.cpp
-    ${ARCH_FOLDER}/Platform/System.cpp
     ${ARCH_FOLDER}/Platform/WifiEvents.cpp
     ${ARCH_FOLDER}/Components/esp8266/esp_cplusplus.cpp
     ${ARCH_FOLDER}/Components/esp8266/startup.cpp
-    ${ARCH_FOLDER}/Components/esp8266/xt_interrupts.cpp
+    #${ARCH_FOLDER}/Components/esp8266/xt_interrupts.cpp
     #${ARCH_FOLDER}/Components/gdbstub/appcode/gdb_hooks.cpp
     ${ARCH_FOLDER}/Components/driver/uart.cpp
     #PARENT_SCOPE
@@ -241,6 +239,8 @@ set(OTHERS_SRCS
     ${OTHERS_FOLDER}/System/stringconversion.cpp
     ${OTHERS_FOLDER}/System/m_printf.cpp
     ${OTHERS_FOLDER}/Platform/OsMessageInterceptor.cpp
+    ${OTHERS_FOLDER}/Platform/WDT.cpp
+    ${OTHERS_FOLDER}/Platform/System.cpp
     ${OTHERS_FOLDER}/Services/HexDump/HexDump.cpp
     ${OTHERS_FOLDER}/Services/Yeelight/YeelightBulb.cpp
     ${OTHERS_FOLDER}/Services/CommandProcessing/CommandHandler.cpp
