@@ -19,7 +19,7 @@
 
 #define ESP_MAX_INTERRUPTS 16
 
-typedef void (*InterruptCallback)(void);
+typedef void (*InterruptCallback)();
 typedef Delegate<void()> InterruptDelegate;
 
 /** @brief  Attach a function to a GPIO interrupt
@@ -90,16 +90,9 @@ void interruptMode(uint8_t pin, GPIO_INT_TYPE type);
  */
 GPIO_INT_TYPE ConvertArduinoInterruptMode(uint8_t mode);
 
-/** @brief  Disable interrupts
- */
-void noInterrupts();
-
-/** @brief  Enable interrupts
-*/
-void interrupts();
-
 #define digitalPinToInterrupt(pin) ((pin) < ESP_MAX_INTERRUPTS ? (pin) : -1)
 
+// AVR-style interrupt management
 #define cli() noInterrupts()
 #define sei() interrupts()
 

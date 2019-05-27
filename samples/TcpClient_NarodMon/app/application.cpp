@@ -2,7 +2,6 @@
  * By JustACat http://esp8266.ru/forum/members/120/
  * 23.04.2015
  */
-#include <user_config.h>
 #include <SmingCore.h>
 
 // If you want, you can define WiFi settings globally in Eclipse Environment Variables
@@ -103,7 +102,7 @@ void gotIP(IPAddress ip, IPAddress netmask, IPAddress gateway)
 void init()
 {
 	// Настраиваем и включаем вывод в UART для дебага
-	Serial.begin(115200);
+	Serial.begin(COM_SPEED_SERIAL);
 	Serial.systemDebugOutput(true);
 	Serial.println("Hello friendly world! :)");
 

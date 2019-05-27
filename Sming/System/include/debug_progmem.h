@@ -63,7 +63,7 @@ extern "C" {
 #define MACROQUOT(x) #x
 #define MACROQUOTE(x) MACROQUOT(x)
 
-#ifdef SMING_INCLUDED
+#ifdef ICACHE_FLASH
 #define PROGMEM_DEBUG                                                                                                  \
 	__attribute__((aligned(4))) __attribute__((section(MACROQUOTE(MACROCONCAT(.irom.debug., __COUNTER__, __LINE__)))))
 #else
@@ -76,14 +76,14 @@ extern "C" {
 #if DEBUG_PRINT_FILENAME_AND_LINE
 #define debug_e(fmt, ...)                                                                                              \
 	(__extension__({                                                                                                   \
-		static const char log_string[] PROGMEM_DEBUG = "[" MACROQUOTE(CUST_FILE_BASE) ":%d] " fmt "\n";                \
+		static const char log_string[] PROGMEM_DEBUG = "[" MACROQUOTE(CUST_FILE_BASE) ":%d] " fmt "\r\n";                \
 		LOAD_PSTR(fmtbuf, log_string);                                                                                 \
 		m_printf(fmtbuf, __LINE__, ##__VA_ARGS__);                                                                     \
 	}))
 #else
 #define debug_e(fmt, ...)                                                                                              \
 	(__extension__({                                                                                                   \
-		static const char log_string[] PROGMEM_DEBUG = "%u " fmt "\n";                                                 \
+		static const char log_string[] PROGMEM_DEBUG = "%u " fmt "\r\n";                                                 \
 		LOAD_PSTR(fmtbuf, log_string);                                                                                 \
 		m_printf(fmtbuf, system_get_time(), ##__VA_ARGS__);                                                            \
 	}))

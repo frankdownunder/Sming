@@ -64,9 +64,11 @@ RBOOT_ROM_1		:= $(FW_BASE)/$(RBOOT_ROM_1).bin
 # Code compiled with application
 APPCODE :=
 
-EXTRA_INCDIR += $(ARCH_COMPONENTS) \
-				$(ARCH_COMPONENTS)/esp8266/include \
-				$(ARCH_COMPONENTS)/driver/include
+EXTRA_INCDIR += $(ARCH_COMPONENTS)/esp8266/include \
+				$(SDK_INCDIR) \
+				$(ARCH_COMPONENTS)/driver/include \
+				$(ARCH_COMPONENTS)/spi_flash/include \
+				$(ARCH_COMPONENTS)/esp_wifi/include
 
 # Macro to make an optional library
 # $1 -> The library to make
@@ -78,7 +80,7 @@ endef
 # => rBoot
 RBOOT_BASE		:= $(ARCH_COMPONENTS)/rboot
 APPCODE			+= $(RBOOT_BASE)/appcode $(RBOOT_BASE)/rboot/appcode
-EXTRA_INCDIR	+= $(RBOOT_BASE)/rboot
+EXTRA_INCDIR	+= $(RBOOT_BASE)/rboot $(RBOOT_BASE)/appcode $(RBOOT_BASE)/rboot/appcode
 RBOOT_BIN		:= $(FW_BASE)/rboot.bin
 CUSTOM_TARGETS	+= $(RBOOT_BIN)
 CFLAGS			+= -DRBOOT_INTEGRATION
@@ -164,10 +166,11 @@ endif
 
 # => GDB
 CONFIG_VARS			+= ENABLE_GDB
-APPCODE				+= $(ARCH_COMPONENTS)/gdbstub/appcode
-EXTRA_INCDIR		+= $(ARCH_COMPONENTS)/gdbstub/include
+GDBSTUB_BASE		:= $(ARCH_COMPONENTS)/gdbstub
+APPCODE				+= $(GDBSTUB_BASE)/appcode
+EXTRA_INCDIR		+= $(GDBSTUB_BASE)
 ifeq ($(ENABLE_GDB), 1)
-	APPCODE			+= $(ARCH_COMPONENTS)/gdbstub
+	APPCODE			+= $(GDBSTUB_BASE)
 	CUSTOM_TARGETS	+= gdb_symbols
 
 # Copy symbols required by GDB into build directory
@@ -212,7 +215,7 @@ ifeq ($(RBOOT_BIG_FLASH),1)
 	CUSTOM_TARGETS	+= $(LIBMAIN_DST)
 
 $(LIBMAIN_DST): $(LIBMAIN_SRC)
-	echo "OC $@"
+	@echo "OC $@"
 	$(Q) $(OBJCOPY) -W Cache_Read_Enable_New $^ $@
 endif
 
@@ -263,10 +266,10 @@ LIBS += $(LIBPWM)
 
 
 #
-LIBS := microc microgcc hal phy pp net80211 mqttc wpa $(LIBSMING) crypto smartconfig $(EXTRA_LIBS) $(LIBS)
+LIBS := microc microgcc hal phy pp net80211 wpa $(LIBSMING) crypto smartconfig $(EXTRA_LIBS) $(LIBS)
 
 # linker flags used to generate the main object file
-LDFLAGS	= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u spiffs_get_storage_config -u custom_crash_callback \
+LDFLAGS	= -nostdlib -u call_user_start -u Cache_Read_Enable_New -u custom_crash_callback \
 			-Wl,-static -Wl,--gc-sections -Wl,-Map=$(basename $@).map -Wl,-wrap,system_restart_local 
 
 include $(ARCH_BASE)/flash.mk
@@ -299,7 +302,7 @@ $(RBOOT_ROM_1): $(TARGET_OUT_1)
 
 $(TARGET_OUT_0): $(APP_AR)
 	$(vecho) "LD $@"
-	$(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(ARCH_BASE)/Compiler/ld \
+	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(ARCH_BASE)/Compiler/ld \
 		-T$(RBOOT_LD_0) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
 
 	$(Q) $(MEMANALYZER) $@ > $(FW_MEMINFO_NEW)
@@ -323,14 +326,14 @@ $(TARGET_OUT_0): $(APP_AR)
 
 $(TARGET_OUT_1): $(APP_AR)
 	$(vecho) "LD $@"
-	$(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(ARCH_BASE)/Compiler/ld \
+	$(Q) $(LD) -L$(USER_LIBDIR) -L$(SDK_LIBDIR) -L$(BUILD_BASE) -L$(ARCH_BASE)/Compiler/ld \
 		-T$(RBOOT_LD_1) $(LDFLAGS) -Wl,--start-group $(APP_AR) $(addprefix -l,$(LIBS)) -Wl,--end-group -o $@
 
 # recreate it from 0, since you get into problems with same filenames
 $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) test ! -f $@ || rm $@
-	$(AR) rcsP $@ $^
+	$(Q) $(AR) rcsP $@ $^
 
 .PHONY: libsming
 libsming: $(LIBSMING_DST) ##Build the Sming framework and user libraries
@@ -349,10 +352,10 @@ checkdirs: | $(BUILD_DIR) $(FW_BASE)
 $(BUILD_DIR) $(FW_BASE):
 	$(Q) mkdir -p $@
 
-##@Cleaning
-
 .PHONY: spiff_update
 spiff_update: spiff_clean $(SPIFF_BIN_OUT) ##Rebuild the SPIFFS filesystem image
+
+##@Cleaning
 
 .PHONY: spiff_clean
 spiff_clean: ##Remove SPIFFS image file

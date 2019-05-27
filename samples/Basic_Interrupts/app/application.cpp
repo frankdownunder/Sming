@@ -1,4 +1,3 @@
-#include <user_config.h>
 #include <SmingCore.h>
 
 // Input pin for demonstrating a call to a low-level interrupt handler callback
@@ -36,7 +35,7 @@ void IRAM_ATTR interruptHandler()
 		 * You could also pass a function pointer to queueCallback().
 		 */
 		System.queueCallback(
-			[&](uint32_t interruptToggleCount) {
+			[](uint32_t interruptToggleCount) {
 				say("Toggle count hit ");
 				say(interruptToggleCount);
 				say(", current value is ");

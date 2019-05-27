@@ -81,6 +81,9 @@ ARCH_COMPONENTS	= $(ARCH_BASE)/Components
 USER_LIBDIR		= $(ARCH_BASE)/Compiler/lib
 COMPONENTS		:= Components
 
+BUILD_BASE		:= out/build/$(SMING_ARCH)
+FW_BASE			:= out/firmware
+
 # Git command
 GIT ?= git
 
@@ -132,6 +135,10 @@ else
 	CFLAGS += -Os -g
 endif
 
+#
+CONFIG_VARS	+= USER_CFLAGS
+CFLAGS		+= $(USER_CFLAGS)
+
 #Append debug options
 CONFIG_VARS += SMING_RELEASE
 CFLAGS += -DCUST_FILE_BASE=$$* -DDEBUG_VERBOSE_LEVEL=$(DEBUG_VERBOSE_LEVEL) -DDEBUG_PRINT_FILENAME_AND_LINE=$(DEBUG_PRINT_FILENAME_AND_LINE)
@@ -147,12 +154,6 @@ ifdef LOCALE
 endif
 
 include $(SMING_HOME)/$(ARCH_BASE)/build.mk
-
-AS	:= $(Q)$(AS)
-CC	:= $(Q)$(CC)
-CXX	:= $(Q)$(CXX)
-AR	:= $(Q)$(AR)
-LD	:= $(Q)$(LD)
 
 # Declare target for user library
 # $1 -> Name of library

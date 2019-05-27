@@ -57,6 +57,7 @@
 #include "Data/Stream/JsonObjectStream.h"
 #include "Data/Stream/FileStream.h"
 #include "Data/Stream/TemplateFileStream.h"
+#include "Data/Stream/FlashMemoryStream.h"
 
 #include "DateTime.h"
 
