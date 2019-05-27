@@ -1,6 +1,8 @@
 #=============================================================================#
 #                         Sming Library cmake script
 #=============================================================================#
+message("SMING LIBRARY")
+message("=============")
 cmake_minimum_required(VERSION 3.5)
 project(sming C CXX ASM)
 # The version number.
@@ -50,6 +52,30 @@ set(CMAKE_ASM_COMPILER_WORKS 1)
 #set(CMAKE_C_COMPILER_ID_RUN 1)
 #set(CMAKE_CXX_COMPILER_ID_RUN 1)
 #set(CMAKE_ASM_COMPILER_ID_RUN 1)
+
+message("CXX: ${CMAKE_CXX_COMPILER}")
+message("C:   ${CMAKE_C_COMPILER}")
+message("ASM: ${CMAKE_ASM_COMPILER}")
+
+# ------------------------------------------
+
+execute_process(COMMAND ${CMAKE_CXX_COMPILER} "--help=target" OUTPUT_VARIABLE OUT)
+if(${OUT} MATCHES "mforce-l32")
+    set(MFORCE32 "-DMFORCE32=MFORCE32")
+else()
+    set(MFORCE32 "")
+ENDIF()
+message("MFORCE32 = ${MFORCE32}")
+#TODO remove PROGMEM_FLAGS
+# Setting the compiier option for PROGMEM was really difficult,especially using target_compile_options.
+# Brackets spaces and  quotes are all problematic for cmake strings and lists.
+set(PROGMEM_FLAGS "-DPROGMEM_L32=\"__attribute__((aligned(4)))  __attribute__((section(\\\".irom.text\\\")))\" "    )
+#message(PROGMEM_FLAGS)
+#message(${PROGMEM_FLAGS})
+
+
+
+
 
 #include($ENV{SMING_HOME}/cmake/sming.cmake)
 #add_library(sming STATIC ${COMPONENT_SRCS})
@@ -123,7 +149,8 @@ set(ESPTOOL $ENV{ESP_HOME}/esptool/esptool.py)
 #                         User options for Building
 #=============================================================================#
 
-
+message("Options")
+message("-------")
 # should we target ESP8266, ESP32 or Linux?
 option (USE_ESP8266_ESP32_LINUX  "Set ESP8266 as the target(0), ESP32[unsoprted yet] (1), or Linux(2)" 0) 
 
@@ -135,20 +162,16 @@ option(ENABLE_CUSTOM_HEAP   "ENABLE_CUSTOM_HEAP (0 or 1)?" OFF)
 option(ENABLE_CUSTOM_LWIP   "ENABLE_CUSTOM_LWIP (0 or 1)?" ON)
 option(ENABLE_CUSTOM_PWM    "ENABLE_CUSTOM_PWM (0 or 1)?" ON)
 option(ENABLE_ESPCONN       "ENABLE_ESPCONN (0 or 1)?" OFF)
-option(ENABLE_GDB           "ENABLE_GDB ()?" 0)
+option(ENABLE_GDB           "ENABLE_GDB ()?" OFF)
 option(ENABLE_LWIPDEBUG     "ENABLE_LWIPDEBUG ()?" 0)
 option(ENABLE_SSL           "ENABLE_SSL (0 or 1)?" OFF)
 option(ENABLE_WPS           "ENABLE_WPS (0 or 1)?" OFF)
 option(SSL_DEBUG            "SSL_DEBUG()?" 0)
-# should we target ESP8266, ESP32 or lInux?
-option (USE_ESP8266_ESP32_LINUX 
-        "Set ESP8266 as the target(0), ESP32 (1), or Linux(2)" 0) 
+
 
 set(COM_SPEED_SERIAL 11520)
 
-message("USE_ESP8266_ESP32_LINUX ${}")
-
-
+message("USE_ESP8266_ESP32_LINUX ${USE_ESP8266_ESP32_LINUX}")
 message("COM_SPEED_SERIAL     ${COM_SPEED_SERIAL}")
 message("DEBUG_VERBOSE_LEVEL  ${DEBUG_VERBOSE_LEVEL}")
 message("ENABLE_CMD_EXECUTOR  ${ENABLE_CMD_EXECUTOR}")
@@ -192,30 +215,9 @@ message("CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
 #                         Compiler options 
 #=============================================================================#
 
+include(cmake/CompilerOptions.cmake)
+
 # Note its better to use target_compile_options, than to set CMAKE_CXX_FLAGS directly
-set(WARNNGS -Wall -Werror -Wl,-EL -Wpointer-arith -Wno-comment -Wno-maybe-uninitialized -Wno-parentheses -Wno-return-type -Wno-sign-compare -Wno-strict-aliasing -Wno-unused-but-set-variable -Wno-unused-variable -Wpointer-arith -Wundef)
-set(COMMON_FLAGS -w )
-set(CPLUSPLUSONLY_FLAGS -std=c++11 -g -mlongcalls -Os -ffunction-sections -fdata-sections -mtext-section-literals -falign-functions=4)
-
-#string (REPLACE ";" " " COMMON_FLAGS "${COMMON_FLAGSLIST}")
-#set(CONLY_FLAGS         -DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))")
-
-#TODO Move these into target_compile_options
-set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wno-implicit-function-declaration -Wl,-EL -fno-inline-functions -nostdlib -std=gnu99")
-set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -x assembler-with-cpp ")
-set(CMAKE_EXE_LINKER_FLAGS
-        "${CMAKE_EXE_LINKER_FLAGS} -L/opt/Sming/Sming/Arch/Esp8266/Compiler/ld -L/opt/Sming/Sming/Arch/Esp8266/Components/rboot/rboot -L/opt/Sming/Sming/Arch/Esp8266/Compiler/lib -L/opt/Sming/Sming/Arch/Esp8266/Components/Sdk/ESP8266_NONOS_SDK/lib -Lout/build -nostdlib -Wl,--no-check-sections -u call_user_start -u _printf_float -u _scanf_float -Wl,-static -T/opt/Sming/Sming/Arch/Esp8266/Compiler/ld/rboot.rom0.ld  -Wl,--gc-sections -Wl,-wrap,system_restart_local ")
-
-
-
-
-# CMAKE_C_COMPILER is not mistake, gcc for all, not g++
-set(CMAKE_CXX_LINK_EXECUTABLE
-        "<CMAKE_C_COMPILER> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> -o <TARGET> -Wl,--start-group <OBJECTS> <LINK_LIBRARIES> -Wl,--end-group")
-
-set(CMAKE_C_LINK_EXECUTABLE
-        "<CMAKE_C_COMPILER> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> -o <TARGET> -Wl,--start-group <OBJECTS> <LINK_LIBRARIES> -Wl,--end-group")
-   
 
 #=============================================================================#
 #                         Targets and dependencies
@@ -235,7 +237,7 @@ set_property(TARGET sming PROPERTY OUTPUT_NAME sming)
 
 
 # esp8266 include directories
-target_include_directories(sming PUBLIC
+include_directories(sming PUBLIC
         ${SmingIncludes}
         )
 
@@ -243,9 +245,11 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 
 # and esp8266 build definitions
-target_compile_definitions(sming PUBLIC
+add_definitions( 
+        #sming PUBLIC
         # I cant get PROGMEM_L32 to work here, (set copiler flags instead as a workaround):                                
         #-DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))" )
+        ${MFORCE32}
         -D__ets__ 
         -DARDUINO=106
         -DCOM_SPEED_SERIAL=11520
@@ -314,18 +318,10 @@ endif()
 
 target_compile_options(sming PUBLIC $<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>)
 target_compile_options(sming PUBLIC $<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>)
-
-target_compile_options(sming PUBLIC -fno-exceptions )
-target_compile_options(sming PUBLIC -fno-rtti )
-
 target_compile_options(sming PUBLIC ${WARNNGS} )
 target_compile_options(sming PUBLIC ${COMMON_FLAGS} )
 target_compile_options(sming PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${CPLUSPLUSONLY_FLAGS}> )
-# Setting the compiier option for PROGMEM was really difficult,especially using target_compile_options.
-# Brackets spaces and  quotes are all problematic for cmake strings and lists.
-set(PROGMEM_FLAGS "-DPROGMEM_L32=\"__attribute__((aligned(4)))  __attribute__((section(\\\".irom.text\\\")))\" "    )
-message(PROGMEM_FLAGS)
-message(${PROGMEM_FLAGS})
+
 set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} ${PROGMEM_FLAGS}")
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} ${PROGMEM_FLAGS}")
 message(${CMAKE_CXX_FLAGS})
@@ -335,15 +331,6 @@ message(${CMAKE_CXX_FLAGS})
 #target_link_libraries(sming PUBLIC microc microgcc hal phy pp net80211 mqttc wpa crypto lwip_open main wps espnow smartconfig airkiss wpa2 stdc++ m c gcc)
 
 
-#I dont think we need this,
-#message("Supported features (current compiler) = ${CMAKE_CXX_COMPILE_FEATURES}")
-target_compile_features(sming
-    PUBLIC
-        cxx_variadic_templates
-        cxx_nullptr
-    PRIVATE
-        cxx_lambdas
-)
 
 set(ARG_CACHE_FILE  "${PROJECT_SOURCE_DIR}/BuildNumberCache.txt")
 set(ARG_HEADER_FILE "${PROJECT_BINARY_DIR}/BuildNumber.h")
@@ -383,3 +370,5 @@ configure_file (
 
 #set(ll 123  -DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))" ))
 #message(ll)
+message("END SMING LIBRARY")
+message("=================")
