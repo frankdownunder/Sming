@@ -61,15 +61,17 @@ message("ASM: ${CMAKE_ASM_COMPILER}")
 
 execute_process(COMMAND ${CMAKE_CXX_COMPILER} "--help=target" OUTPUT_VARIABLE OUT)
 if(${OUT} MATCHES "mforce-l32")
-    set(MFORCE32 "-DMFORCE32=MFORCE32")
+    set(MFORCE32 "-DMFORCE32")
+    set(MFORCE32CompilerOption "-mforce-l32")
 else()
     set(MFORCE32 "")
+    set(MFORCE32CompilerOption "")
 ENDIF()
 message("MFORCE32 = ${MFORCE32}")
 #TODO remove PROGMEM_FLAGS
 # Setting the compiier option for PROGMEM was really difficult,especially using target_compile_options.
 # Brackets spaces and  quotes are all problematic for cmake strings and lists.
-set(PROGMEM_FLAGS "-DPROGMEM_L32=\"__attribute__((aligned(4)))  __attribute__((section(\\\".irom.text\\\")))\" "    )
+#set(PROGMEM_FLAGS "-DPROGMEM_L32=\"__attribute__((aligned(4)))  __attribute__((section(\\\".irom.text\\\")))\" "    )
 #message(PROGMEM_FLAGS)
 #message(${PROGMEM_FLAGS})
 
@@ -249,6 +251,7 @@ add_definitions(
         #sming PUBLIC
         # I cant get PROGMEM_L32 to work here, (set copiler flags instead as a workaround):                                
         #-DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))" )
+        -DARCH_ESP8266
         ${MFORCE32}
         -D__ets__ 
         -DARDUINO=106
@@ -324,7 +327,8 @@ target_compile_options(sming PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${CPLUSPLUSONLY_FL
 
 set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} ${PROGMEM_FLAGS}")
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} ${PROGMEM_FLAGS}")
-message(${CMAKE_CXX_FLAGS})
+message("CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
+
 #target_compile_options(sming PUBLIC [=[-DPROGMEM_L32="__attribute__((aligned(4)))]=] [=[__attribute__((section(\".irom.text\")))"]=])
 
 

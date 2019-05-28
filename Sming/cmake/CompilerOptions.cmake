@@ -23,7 +23,9 @@ set(WARNNGS
 set(COMMON_FLAGS 
     -w 
     -fno-exceptions 
-    -fno-rtti)
+    -fno-rtti
+    ${MFORCE32CompilerOption}
+    )
 
 set(CPLUSPLUSONLY_FLAGS 
     -std=c++11 

@@ -20,4 +20,4 @@
 /* #undef ENABLE_LWIPDEBUG */
 /* #undef ENABLE_SSL */
 /* #undef ENABLE_WPS */
-#define  SSL_DEBUG            
+/* #undef SSL_DEBUG */

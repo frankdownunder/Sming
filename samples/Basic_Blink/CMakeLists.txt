@@ -62,6 +62,8 @@ set(COM_SPEED_SERIAL 11520)
 add_executable(${CMAKE_PROJECT_NAME} ${USER_SOURCES})
 message("About to build: ${CMAKE_PROJECT_NAME}")
 
+include($ENV{SMING_HOME}/cmake/CompilerOptions.cmake)
+
 target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC $<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>)
 target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC $<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>)
 target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC ${WARNNGS} )
@@ -70,6 +72,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${
 
 set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} ${PROGMEM_FLAGS}")
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} ${PROGMEM_FLAGS}")
+
 message("Warnings=${WARNNGS}")
 message("CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 
@@ -92,7 +95,6 @@ set(LIBS microc microgcc hal phy pp net80211 mqttc wpa ${LIBSMING} crypto smartc
 
 target_link_libraries(Basic_Blink sming microc microgcc hal phy pp net80211 mqttc wpa crypto lwip_open main wps espnow smartconfig airkiss wpa2 stdc++ m c gcc)
 
-include($ENV{SMING_HOME}/cmake/CompilerOptions.cmake)
 #register_component()
 # and esp8266 build definitions
 add_definitions( 
