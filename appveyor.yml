@@ -1,0 +1,27 @@
+os: Windows Server 2012 R2
+
+environment:
+  PATH: C:\MinGW\msys\1.0\bin;C:\MinGW\bin;C:\Python27\scripts;%PATH%
+  SDK_BUILD: 258
+  matrix:
+    - build_platform: "x86"
+      build_compiler: "mingw"
+      SMING_ARCH: Host
+
+    - build_platform: "x86"
+      build_compiler: "mingw"
+      SMING_ARCH: Esp8266
+      SDK_VERSION: 2.0.0
+
+    - build_platform: "x86"
+      build_compiler: "mingw"
+      SMING_ARCH: Esp8266
+      SDK_VERSION: 1.5.0
+
+# cache:
+#   - src/  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
+install:
+  - cmd: .appveyor/install.cmd
+
+build_script:
+  - cmd: .appveyor/build.cmd
