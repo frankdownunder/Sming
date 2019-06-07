@@ -1,7 +1,7 @@
 /****
  * Sming Framework Project - Open Source framework for high efficiency native ESP8266 development.
  * Created 2015 by Skurydin Alexey
- * http://github.com/anakod/Sming
+ * http://github.com/SmingHub/Sming
  * All files of the Sming Core are provided under the LGPL v3 license.
  *
  * HttpResponse.cpp
@@ -56,14 +56,14 @@ HttpResponse* HttpResponse::setHeader(const String& name, const String& value)
 
 bool HttpResponse::sendString(const String& text)
 {
-	if(buffer == nullptr) {
-		setBuffer(new MemoryDataStream());
-		if(buffer == nullptr) {
-			return false;
-		}
+	auto memoryStream = new MemoryDataStream();
+	if(memoryStream == nullptr) {
+		return false;
 	}
 
-	return buffer->print(text) == text.length();
+	setStream(memoryStream);
+
+	return memoryStream->print(text) == text.length();
 }
 
 bool HttpResponse::sendFile(String fileName, bool allowGzipFileCheck)
