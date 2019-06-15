@@ -10,7 +10,7 @@
 
 #cmakedefine  USE_ESP8266_ESP32_LINUX
 
-#cmakedefine  DEBUG_VERBOSE_LEVEL  
+#cmakedefine  DEBUG_VERBOSE_LEVEL  @DEBUG_VERBOSE_LEVEL@
 #cmakedefine  ENABLE_CMD_EXECUTOR  
 #cmakedefine  ENABLE_CUSTOM_HEAP   
 #cmakedefine  ENABLE_CUSTOM_LWIP   

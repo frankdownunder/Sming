@@ -4,6 +4,9 @@
 message("SMING Compiler Options")
 message("----------------------")
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED on)
+
 set(WARNNGS 
     -Wall 
     -Werror 
@@ -43,9 +46,10 @@ set(CPLUSPLUSONLY_FLAGS
 #TODO Move these into target_compile_options
 set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wno-implicit-function-declaration -Wl,-EL -fno-inline-functions -nostdlib -std=gnu99")
 set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -x assembler-with-cpp ")
-set(CMAKE_EXE_LINKER_FLAGS
+if(SMING_ARCH STREQUAL "Esp8266")
+    set(CMAKE_EXE_LINKER_FLAGS
         "${CMAKE_EXE_LINKER_FLAGS} -L/opt/Sming/Sming/Arch/Esp8266/Compiler/ld -L/opt/Sming/Sming/Arch/Esp8266/Components/rboot/rboot -L/opt/Sming/Sming/Arch/Esp8266/Compiler/lib -L/opt/Sming/Sming/Arch/Esp8266/Components/Sdk/ESP8266_NONOS_SDK/lib -Lout/build -nostdlib -Wl,--no-check-sections -u call_user_start -u _printf_float -u _scanf_float -Wl,-static -T/opt/Sming/Sming/Arch/Esp8266/Compiler/ld/rboot.rom0.ld  -Wl,--gc-sections -Wl,-wrap,system_restart_local ")
-
+endif()
 
 # CMAKE_C_COMPILER is not mistake, gcc for all, not g++
 set(CMAKE_CXX_LINK_EXECUTABLE

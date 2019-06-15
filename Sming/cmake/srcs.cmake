@@ -1,277 +1,309 @@
-set(CORE_FOLDER /opt/Sming/Sming/Core 
-    #PARENT_SCOPE
-    )
-set(CORE_SRCS
-    ${CORE_FOLDER}/Clock.cpp
-    ${CORE_FOLDER}/HardwareSerial.cpp
-    ${CORE_FOLDER}/DateTime.cpp
-    ${CORE_FOLDER}/Timer.cpp
-    ${CORE_FOLDER}/AtClient.cpp
-    ${CORE_FOLDER}/FileSystem.cpp
-    ${CORE_FOLDER}/ArduinoCompat.cpp
-    ${CORE_FOLDER}/Wire.cpp
-    ${CORE_FOLDER}/SystemClock.cpp
-    ${CORE_FOLDER}/Debug.cpp
-    ${CORE_FOLDER}/Data/MailMessage.cpp
-    ${CORE_FOLDER}/Data/StreamTransformer.cpp
-    ${CORE_FOLDER}/Data/CStringArray.cpp
-    ${CORE_FOLDER}/Data/HexString.cpp
-    ${CORE_FOLDER}/Data/Buffer/SerialBuffer.cpp
-    ${CORE_FOLDER}/Data/Buffer/CircularBuffer.cpp
-    ${CORE_FOLDER}/Data/Stream/LimitedMemoryStream.cpp
-    ${CORE_FOLDER}/Data/Stream/MultipartStream.cpp
-    ${CORE_FOLDER}/Data/Stream/GdbFileStream.cpp
-    ${CORE_FOLDER}/Data/Stream/MultiStream.cpp
-    ${CORE_FOLDER}/Data/Stream/Base64OutputStream.cpp
-    ${CORE_FOLDER}/Data/Stream/UrlencodedOutputStream.cpp
-    ${CORE_FOLDER}/Data/Stream/JsonObjectStream.cpp
-    ${CORE_FOLDER}/Data/Stream/FlashMemoryStream.cpp
-    ${CORE_FOLDER}/Data/Stream/TemplateStream.cpp
-    ${CORE_FOLDER}/Data/Stream/MemoryDataStream.cpp
-    ${CORE_FOLDER}/Data/Stream/FileStream.cpp
-    ${CORE_FOLDER}/Data/Stream/QuotedPrintableOutputStream.cpp
-    ${CORE_FOLDER}/Data/Stream/DataSourceStream.cpp
-    ${CORE_FOLDER}/Data/Stream/ChunkedStream.cpp
-    ${CORE_FOLDER}/Data/Stream/EndlessMemoryStream.cpp
-    ${CORE_FOLDER}/Network/WebsocketClient.cpp
-    ${CORE_FOLDER}/Network/TcpServer.cpp
-    ${CORE_FOLDER}/Network/NetUtils.cpp
-    ${CORE_FOLDER}/Network/HttpClient.cpp
-    ${CORE_FOLDER}/Network/UdpConnection.cpp
-    ${CORE_FOLDER}/Network/Url.cpp
-    ${CORE_FOLDER}/Network/FtpServer.cpp
-    ${CORE_FOLDER}/Network/TcpConnection.cpp
-    ${CORE_FOLDER}/Network/WebConstants.cpp
-    ${CORE_FOLDER}/Network/MqttClient.cpp
-    ${CORE_FOLDER}/Network/TcpClient.cpp
-    ${CORE_FOLDER}/Network/HttpServer.cpp
-    ${CORE_FOLDER}/Network/TelnetServer.cpp
-    ${CORE_FOLDER}/Network/SmtpClient.cpp
-    ${CORE_FOLDER}/Network/NtpClient.cpp
-    ${CORE_FOLDER}/Network/DNSServer.cpp
-    ${CORE_FOLDER}/Network/Ftp/FtpServerConnection.cpp
-    ${CORE_FOLDER}/Network/Http/HttpConnection.cpp
-    ${CORE_FOLDER}/Network/Http/HttpCommon.cpp
-    ${CORE_FOLDER}/Network/Http/HttpHeaders.cpp
-    ${CORE_FOLDER}/Network/Http/HttpServerConnection.cpp
-    ${CORE_FOLDER}/Network/Http/HttpResponse.cpp
-    ${CORE_FOLDER}/Network/Http/HttpRequest.cpp
-    ${CORE_FOLDER}/Network/Http/HttpParams.cpp
-    ${CORE_FOLDER}/Network/Http/HttpBodyParser.cpp
-    ${CORE_FOLDER}/Network/Http/HttpResourceTree.cpp
-    ${CORE_FOLDER}/Network/Http/HttpRequestAuth.cpp
-    ${CORE_FOLDER}/Network/Http/HttpClientConnection.cpp
-    ${CORE_FOLDER}/Network/Http/Websocket/WebsocketResource.cpp
-    ${CORE_FOLDER}/Network/Http/Websocket/WebsocketConnection.cpp
-    ${CORE_FOLDER}/Network/Mqtt/MqttPayloadParser.cpp
-    ${CORE_FOLDER}/Network/Ssl/SslFingerprints.cpp
-    ${CORE_FOLDER}/Network/Ssl/SslValidator.cpp
-    ${CORE_FOLDER}/Network/WebHelpers/base64.cpp
-    ${CORE_FOLDER}/Network/WebHelpers/aw-sha1.cpp
-    ${CORE_FOLDER}/Network/WebHelpers/escape.cpp
-    #PARENT_SCOPE
-    )
-  
+#=============================================================================#
+#                         Sming Library cmake script
+#=============================================================================#
+message("srcs.cmake: SMING Lists of Souce Code filenames")
+message("-----------------------------------------------")
 
-set(LIBRARY_FOLDER /opt/Sming/Sming/Libraries
+set(FOLDER_BASE /opt/Sming/Sming 
     #PARENT_SCOPE
     )
-set(LIBRARY_SRCS
-    ${LIBRARY_FOLDER}/SparkFun_APDS9960/SparkFun_APDS9960.cpp
-    ${LIBRARY_FOLDER}/LiquidCrystal/FastIO.cpp
-    ${LIBRARY_FOLDER}/LiquidCrystal/LiquidCrystal_I2C.cpp
-    ${LIBRARY_FOLDER}/LiquidCrystal/I2CIO.cpp
-    ${LIBRARY_FOLDER}/LiquidCrystal/LiquidCrystal_SR2W.cpp
-    ${LIBRARY_FOLDER}/LiquidCrystal/LCD.cpp
-    ${LIBRARY_FOLDER}/LiquidCrystal/LiquidCrystal.cpp
-    ${LIBRARY_FOLDER}/LiquidCrystal/LiquidCrystal_SR3W.cpp
-    ${LIBRARY_FOLDER}/LiquidCrystal/LiquidCrystal_SR.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Toshiba.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Sony.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Gree.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Sanyo.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Lasertag.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Fujitsu.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_RCMM.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Kelvinator.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Magiquest.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_LG.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Pronto.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Carrier.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Sherwood.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Coolix.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Whynter.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Mitsubishi.cpp
-    ${LIBRARY_FOLDER}/IR/src/IRrecv.cpp
-    ${LIBRARY_FOLDER}/IR/src/IRutils.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_GlobalCache.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_NEC.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Daikin.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Samsung.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Midea.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Trotec.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Nikai.cpp
-    ${LIBRARY_FOLDER}/IR/src/IRtimer.cpp
-    ${LIBRARY_FOLDER}/IR/src/IRsend.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_RC5_RC6.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Haier.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Argo.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Sharp.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Dish.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Denon.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_JVC.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Aiwa.cpp
-    ${LIBRARY_FOLDER}/IR/src/ir_Panasonic.cpp
-    ${LIBRARY_FOLDER}/Adafruit_BME280_Library/Adafruit_BME280.cpp
-    ${LIBRARY_FOLDER}/MCP23S17/MCP23S17.cpp
-    ${LIBRARY_FOLDER}/si4432/si4432.cpp
-    ${LIBRARY_FOLDER}/RF24/RF24.cpp
-    ${LIBRARY_FOLDER}/WS2812/WS2812.cpp
-    ${LIBRARY_FOLDER}/Servo/ServoChannel.cpp
-    ${LIBRARY_FOLDER}/Servo/Servo.cpp
-    ${LIBRARY_FOLDER}/MMA_7455/MMA_7455.cpp
-    ${LIBRARY_FOLDER}/SDCard/SDCard.cpp
-    ${LIBRARY_FOLDER}/DHTesp/DHTesp.cpp
-    ${LIBRARY_FOLDER}/BMP180/BMP180.cpp
-    ${LIBRARY_FOLDER}/HMC5883L/HMC5883L.cpp
-    ${LIBRARY_FOLDER}/Adafruit_PCD8544/Adafruit_PCD8544.cpp
-    ${LIBRARY_FOLDER}/BH1750FVI/BH1750FVI.cpp
-    ${LIBRARY_FOLDER}/MCP23017/MCP23017.cpp
-    ${LIBRARY_FOLDER}/TM1637/TM1637Display.cpp
-    ${LIBRARY_FOLDER}/RCSwitch/RCSwitch.cpp
-    ${LIBRARY_FOLDER}/DFRobotDFPlayerMini/DFRobotDFPlayerMini.cpp
-    ${LIBRARY_FOLDER}/Adafruit_SSD1306/Adafruit_SSD1306.cpp
-    ${LIBRARY_FOLDER}/DS18S20/ds18s20.cpp
-    ${LIBRARY_FOLDER}/Adafruit_ST7735/Adafruit_ST7735.cpp
-    ${LIBRARY_FOLDER}/DS3232RTC/DS3232RTC.cpp
-    ${LIBRARY_FOLDER}/Ultrasonic/Ultrasonic.cpp
-    ${LIBRARY_FOLDER}/AM2321/AM2321.cpp
-    ${LIBRARY_FOLDER}/ArduCAM/ArduCAMStream.cpp
-    ${LIBRARY_FOLDER}/ArduCAM/ArduCAM.cpp
-    ${LIBRARY_FOLDER}/TFT_ILI9163C/TFT_ILI9163C.cpp
-    ${LIBRARY_FOLDER}/Adafruit_NeoPixel/Adafruit_NeoPixel.cpp
-    ${LIBRARY_FOLDER}/I2Cdev/I2Cdev.cpp  
-    ${LIBRARY_FOLDER}/Adafruit_GFX/Adafruit_GFX.cpp
-    ${LIBRARY_FOLDER}/MFRC522/MFRC522.cpp
-    ${LIBRARY_FOLDER}/Bounce/Bounce.cpp
-    ${LIBRARY_FOLDER}/Adafruit_ILI9341/Adafruit_ILI9341.cpp
-    ${LIBRARY_FOLDER}/SI7021/SI7021.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexTouch.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexPicture.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexCheckbox.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexText.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexPage.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexHotspot.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexHardware.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexSlider.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexRtc.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexObject.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexDualStateButton.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexNumber.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexGpio.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexCrop.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexTimer.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexButton.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexWaveform.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexVariable.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexProgressBar.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexScrolltext.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexRadio.cpp
-    ${LIBRARY_FOLDER}/ITEADLIB_Arduino_Nextion/NexGauge.cpp
-    ${LIBRARY_FOLDER}/Mirf/Mirf.cpp
-    ${LIBRARY_FOLDER}/OneWire/OneWire.cpp
-    ${LIBRARY_FOLDER}/APA102/apa102.cpp
-    ${LIBRARY_FOLDER}/CapacitiveSensor/CapacitiveSensor.cpp
-    #PARENT_SCOPE
-    )
-#set(LIBRARY_SRCS)
 
-
-set(ARCH_FOLDER /opt/Sming/Sming/Arch/Esp8266 
-    #PARENT_SCOPE
+if(SMING_ARCH STREQUAL "Esp8266")
+    set(Sming_CXX_SOURCES
+        ${FOLDER_BASE}/Arch/Esp8266/Components/driver/uart.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266/esp_cplusplus.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266/startup.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Core/core_esp8266_si2c.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Core/Digital.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Core/ESP8266EX.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Core/HardwarePWM.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Core/HardwareTimer.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Core/Interrupts.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Core/Network/rBootHttpUpdate.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Core/SPI.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Core/SPISoft.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Platform/AccessPoint.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Platform/RTC.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Platform/Station.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Platform/WifiEvents.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Platform/WifiSniffer.cpp
+        #PARENT_SCOPE
     )
-set(ARCH_SRCS
-    ${ARCH_FOLDER}/Core/HardwarePWM.cpp
-    ${ARCH_FOLDER}/Core/SPISoft.cpp
-    ${ARCH_FOLDER}/Core/ESP8266EX.cpp
-    ${ARCH_FOLDER}/Core/Interrupts.cpp
-    ${ARCH_FOLDER}/Core/Digital.cpp
-    ${ARCH_FOLDER}/Core/core_esp8266_si2c.cpp
-    ${ARCH_FOLDER}/Core/HardwareTimer.cpp
-    ${ARCH_FOLDER}/Core/SPI.cpp
-    ${ARCH_FOLDER}/Core/Network/rBootHttpUpdate.cpp
-    ${ARCH_FOLDER}/Platform/RTC.cpp
-    ${ARCH_FOLDER}/Platform/Station.cpp
-    ${ARCH_FOLDER}/Platform/WifiSniffer.cpp
-    ${ARCH_FOLDER}/Platform/AccessPoint.cpp
-    ${ARCH_FOLDER}/Platform/WifiEvents.cpp
-    ${ARCH_FOLDER}/Components/esp8266/esp_cplusplus.cpp
-    ${ARCH_FOLDER}/Components/esp8266/startup.cpp
-    #${ARCH_FOLDER}/Components/esp8266/xt_interrupts.cpp
-    #${ARCH_FOLDER}/Components/gdbstub/appcode/gdb_hooks.cpp
-    ${ARCH_FOLDER}/Components/driver/uart.cpp
-    #PARENT_SCOPE
-    )
-#set(ARCH_SRCS)
+elseif(SMING_ARCH STREQUAL "Host")
 
+    set(Sming_CXX_SOURCES
+        ${FOLDER_BASE}/Arch/Host/Components/driver/uart.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/esp_hal/system.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/esp_hal/tasks.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/esp_hal/timer_legacy.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/gdbstub/gdb_syscall.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/hostlib/flashmem.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/hostlib/options.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/hostlib/sockets.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/hostlib/startup.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/hostlib/uart_server.cpp
+        ${FOLDER_BASE}/Arch/Host/Core/Digital.cpp
+        ${FOLDER_BASE}/Arch/Host/Core/HardwareTimer.cpp
+        ${FOLDER_BASE}/Arch/Host/Core/Interrupts.cpp
+        ${FOLDER_BASE}/Arch/Host/Platform/AccessPoint.cpp
+        ${FOLDER_BASE}/Arch/Host/Platform/RTC.cpp
+        ${FOLDER_BASE}/Arch/Host/Platform/Station.cpp
+        ${FOLDER_BASE}/Arch/Host/Platform/WifiEvents.cpp
+        #PARENT_SCOPE
+        )
+endif()
 
-set(WIRING_FOLDER /opt/Sming/Sming/Wiring #PARENT_SCOPE
-    )
-set(WIRING_SRCS
-    ${WIRING_FOLDER}/WString.cpp
-    ${WIRING_FOLDER}/WMath.cpp
-    ${WIRING_FOLDER}/Print.cpp
-    ${WIRING_FOLDER}/Stream.cpp
-    ${WIRING_FOLDER}/IPAddress.cpp
-    ${WIRING_FOLDER}/SplitString.cpp
-    ${WIRING_FOLDER}/WShift.cpp
-    ${WIRING_FOLDER}/FakePgmSpace.cpp
-    #PARENT_SCOPE
-    )
-#set(WIRING_SRCS)
-
-
-set(OTHERS_FOLDER /opt/Sming/Sming 
-    #PARENT_SCOPE
-    )
-set(OTHERS_SRCS
-    ${OTHERS_FOLDER}/System/stringutil.cpp
-    ${OTHERS_FOLDER}/System/stringconversion.cpp
-    ${OTHERS_FOLDER}/System/m_printf.cpp
-    ${OTHERS_FOLDER}/Platform/OsMessageInterceptor.cpp
-    ${OTHERS_FOLDER}/Platform/WDT.cpp
-    ${OTHERS_FOLDER}/Platform/System.cpp
-    ${OTHERS_FOLDER}/Services/HexDump/HexDump.cpp
-    ${OTHERS_FOLDER}/Services/Yeelight/YeelightBulb.cpp
-    ${OTHERS_FOLDER}/Services/CommandProcessing/CommandHandler.cpp
-    ${OTHERS_FOLDER}/Services/CommandProcessing/CommandOutput.cpp
-    ${OTHERS_FOLDER}/Services/CommandProcessing/CommandDelegate.cpp
-    ${OTHERS_FOLDER}/Services/CommandProcessing/CommandExecutor.cpp
-    #PARENT_SCOPE
-    )
-#set(OTHERS_SRCS ${OTHERS_FOLDER}/System/stringutil.cpp )
-
-set(Sming_CXX_SOURCES
-    ${CORE_SRCS} ${LIBRARY_SRCS} ${ARCH_SRCS} ${WIRING_SRCS} ${OTHERS_SRCS}
+list(APPEND Sming_CXX_SOURCES
+    ${FOLDER_BASE}/Core/ArduinoCompat.cpp
+    ${FOLDER_BASE}/Core/AtClient.cpp
+    ${FOLDER_BASE}/Core/Clock.cpp
+    ${FOLDER_BASE}/Core/Data/Buffer/CircularBuffer.cpp
+    ${FOLDER_BASE}/Core/Data/Buffer/SerialBuffer.cpp
+    ${FOLDER_BASE}/Core/Data/CStringArray.cpp
+    ${FOLDER_BASE}/Core/Data/HexString.cpp
+    ${FOLDER_BASE}/Core/Data/MailMessage.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/Base64OutputStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/ChunkedStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/DataSourceStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/EndlessMemoryStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/FileStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/FlashMemoryStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/GdbFileStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/JsonObjectStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/LimitedMemoryStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/MemoryDataStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/MultipartStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/MultiStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/QuotedPrintableOutputStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/ReadWriteStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/TemplateStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/UrlencodedOutputStream.cpp
+    ${FOLDER_BASE}/Core/Data/StreamTransformer.cpp
+    ${FOLDER_BASE}/Core/DateTime.cpp
+    ${FOLDER_BASE}/Core/Debug.cpp
+    ${FOLDER_BASE}/Core/FileSystem.cpp
+    ${FOLDER_BASE}/Core/HardwareSerial.cpp
+    ${FOLDER_BASE}/Core/Network/DNSServer.cpp
+    ${FOLDER_BASE}/Core/Network/Ftp/FtpServerConnection.cpp
+    ${FOLDER_BASE}/Core/Network/FtpServer.cpp
+    ${FOLDER_BASE}/Core/Network/Http/HttpBodyParser.cpp
+    ${FOLDER_BASE}/Core/Network/Http/HttpClientConnection.cpp
+    ${FOLDER_BASE}/Core/Network/Http/HttpCommon.cpp
+    ${FOLDER_BASE}/Core/Network/Http/HttpConnection.cpp
+    ${FOLDER_BASE}/Core/Network/Http/HttpHeaders.cpp
+    ${FOLDER_BASE}/Core/Network/Http/HttpParams.cpp
+    ${FOLDER_BASE}/Core/Network/Http/HttpRequest.cpp
+    ${FOLDER_BASE}/Core/Network/Http/HttpRequestAuth.cpp
+    ${FOLDER_BASE}/Core/Network/Http/HttpResourceTree.cpp
+    ${FOLDER_BASE}/Core/Network/Http/HttpResponse.cpp
+    ${FOLDER_BASE}/Core/Network/Http/HttpServerConnection.cpp
+    ${FOLDER_BASE}/Core/Network/Http/Websocket/WebsocketConnection.cpp
+    ${FOLDER_BASE}/Core/Network/Http/Websocket/WebsocketResource.cpp
+    ${FOLDER_BASE}/Core/Network/HttpClient.cpp
+    ${FOLDER_BASE}/Core/Network/HttpServer.cpp
+    ${FOLDER_BASE}/Core/Network/Mqtt/MqttPayloadParser.cpp
+    ${FOLDER_BASE}/Core/Network/MqttClient.cpp
+    ${FOLDER_BASE}/Core/Network/NetUtils.cpp
+    ${FOLDER_BASE}/Core/Network/NtpClient.cpp
+    ${FOLDER_BASE}/Core/Network/SmtpClient.cpp
+    ${FOLDER_BASE}/Core/Network/Ssl/SslFingerprints.cpp
+    ${FOLDER_BASE}/Core/Network/Ssl/SslValidator.cpp
+    ${FOLDER_BASE}/Core/Network/TcpClient.cpp
+    ${FOLDER_BASE}/Core/Network/TcpConnection.cpp
+    ${FOLDER_BASE}/Core/Network/TcpServer.cpp
+    ${FOLDER_BASE}/Core/Network/TelnetServer.cpp
+    ${FOLDER_BASE}/Core/Network/UdpConnection.cpp
+    ${FOLDER_BASE}/Core/Network/Url.cpp
+    ${FOLDER_BASE}/Core/Network/WebConstants.cpp
+    ${FOLDER_BASE}/Core/Network/WebHelpers/aw-sha1.cpp
+    ${FOLDER_BASE}/Core/Network/WebHelpers/base64.cpp
+    ${FOLDER_BASE}/Core/Network/WebHelpers/escape.cpp
+    ${FOLDER_BASE}/Core/Network/WebsocketClient.cpp
+    ${FOLDER_BASE}/Core/SystemClock.cpp
+    ${FOLDER_BASE}/Core/Timer.cpp
+    ${FOLDER_BASE}/Core/Wire.cpp
+    ${FOLDER_BASE}/Libraries/Adafruit_BME280_Library/Adafruit_BME280.cpp
+    ${FOLDER_BASE}/Libraries/Adafruit_GFX/Adafruit_GFX.cpp
+    ${FOLDER_BASE}/Libraries/Adafruit_ST7735/Adafruit_ST7735.cpp
+    ${FOLDER_BASE}/Libraries/AM2321/AM2321.cpp
+    ${FOLDER_BASE}/Libraries/APA102/apa102.cpp
+    ${FOLDER_BASE}/Libraries/BH1750FVI/BH1750FVI.cpp
+    ${FOLDER_BASE}/Libraries/BMP180/BMP180.cpp
+    ${FOLDER_BASE}/Libraries/Bounce/Bounce.cpp
+    ${FOLDER_BASE}/Libraries/DFRobotDFPlayerMini/DFRobotDFPlayerMini.cpp
+    ${FOLDER_BASE}/Libraries/DHTesp/DHTesp.cpp
+    ${FOLDER_BASE}/Libraries/DS18S20/ds18s20.cpp
+    ${FOLDER_BASE}/Libraries/DS3232RTC/DS3232RTC.cpp
+    ${FOLDER_BASE}/Libraries/HMC5883L/HMC5883L.cpp
+    ${FOLDER_BASE}/Libraries/I2Cdev/I2Cdev.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexButton.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexCheckbox.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexCrop.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexDualStateButton.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexGauge.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexGpio.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexHardware.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexHotspot.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexNumber.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexObject.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexPage.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexPicture.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexProgressBar.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexRadio.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexRtc.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexScrolltext.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexSlider.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexText.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexTimer.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexTouch.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexVariable.cpp
+    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexWaveform.cpp
+    ${FOLDER_BASE}/Libraries/LiquidCrystal/FastIO.cpp
+    ${FOLDER_BASE}/Libraries/LiquidCrystal/I2CIO.cpp
+    ${FOLDER_BASE}/Libraries/LiquidCrystal/LCD.cpp
+    ${FOLDER_BASE}/Libraries/LiquidCrystal/LiquidCrystal_I2C.cpp
+    ${FOLDER_BASE}/Libraries/LiquidCrystal/LiquidCrystal_SR.cpp
+    ${FOLDER_BASE}/Libraries/LiquidCrystal/LiquidCrystal_SR2W.cpp
+    ${FOLDER_BASE}/Libraries/LiquidCrystal/LiquidCrystal_SR3W.cpp
+    ${FOLDER_BASE}/Libraries/LiquidCrystal/LiquidCrystal.cpp
+    ${FOLDER_BASE}/Libraries/MCP23017/MCP23017.cpp
+    ${FOLDER_BASE}/Libraries/MFRC522/MFRC522.cpp
+    ${FOLDER_BASE}/Libraries/Mirf/Mirf.cpp
+    ${FOLDER_BASE}/Libraries/MMA_7455/MMA_7455.cpp
+    ${FOLDER_BASE}/Libraries/OneWire/OneWire.cpp
+    ${FOLDER_BASE}/Libraries/RCSwitch/RCSwitch.cpp
+    ${FOLDER_BASE}/Libraries/Servo/Servo.cpp
+    ${FOLDER_BASE}/Libraries/Servo/ServoChannel.cpp
+    ${FOLDER_BASE}/Libraries/si4432/si4432.cpp
+    ${FOLDER_BASE}/Libraries/SI7021/SI7021.cpp
+    ${FOLDER_BASE}/Libraries/SparkFun_APDS9960/SparkFun_APDS9960.cpp
+    ${FOLDER_BASE}/Libraries/TM1637/TM1637Display.cpp
+    ${FOLDER_BASE}/Libraries/Ultrasonic/Ultrasonic.cpp
+    ${FOLDER_BASE}/Platform/OsMessageInterceptor.cpp
+    ${FOLDER_BASE}/Platform/System.cpp
+    ${FOLDER_BASE}/Platform/WDT.cpp
+    ${FOLDER_BASE}/Services/CommandProcessing/CommandDelegate.cpp
+    ${FOLDER_BASE}/Services/CommandProcessing/CommandExecutor.cpp
+    ${FOLDER_BASE}/Services/CommandProcessing/CommandHandler.cpp
+    ${FOLDER_BASE}/Services/CommandProcessing/CommandOutput.cpp
+    ${FOLDER_BASE}/Services/HexDump/HexDump.cpp
+    ${FOLDER_BASE}/Services/Yeelight/YeelightBulb.cpp
+    ${FOLDER_BASE}/System/m_printf.cpp
+    ${FOLDER_BASE}/System/stringconversion.cpp
+    ${FOLDER_BASE}/System/stringutil.cpp
+    ${FOLDER_BASE}/Wiring/FakePgmSpace.cpp
+    ${FOLDER_BASE}/Wiring/IPAddress.cpp
+    ${FOLDER_BASE}/Wiring/Print.cpp
+    ${FOLDER_BASE}/Wiring/SplitString.cpp
+    ${FOLDER_BASE}/Wiring/Stream.cpp
+    ${FOLDER_BASE}/Wiring/WMath.cpp
+    ${FOLDER_BASE}/Wiring/WShift.cpp
+    ${FOLDER_BASE}/Wiring/WString.cpp
 )
+
+if(SMING_ARCH STREQUAL "Esp8266")
+    list(APPEND Sming_CXX_SOURCES
+        ${FOLDER_BASE}/Libraries/Adafruit_ILI9341/Adafruit_ILI9341.cpp
+        ${FOLDER_BASE}/Libraries/Adafruit_NeoPixel/Adafruit_NeoPixel.cpp
+        ${FOLDER_BASE}/Libraries/Adafruit_PCD8544/Adafruit_PCD8544.cpp
+        ${FOLDER_BASE}/Libraries/Adafruit_SSD1306/Adafruit_SSD1306.cpp
+        ${FOLDER_BASE}/Libraries/ArduCAM/ArduCAM.cpp
+        ${FOLDER_BASE}/Libraries/ArduCAM/ArduCAMStream.cpp
+        ${FOLDER_BASE}/Libraries/CapacitiveSensor/CapacitiveSensor.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Aiwa.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Argo.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Carrier.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Coolix.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Daikin.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Denon.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Dish.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Fujitsu.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_GlobalCache.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Gree.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Haier.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_JVC.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Kelvinator.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Lasertag.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_LG.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Magiquest.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Midea.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Mitsubishi.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_NEC.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Nikai.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Panasonic.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Pronto.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_RC5_RC6.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_RCMM.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Samsung.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Sanyo.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Sharp.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Sherwood.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Sony.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Toshiba.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Trotec.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/ir_Whynter.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/IRrecv.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/IRsend.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/IRtimer.cpp
+        ${FOLDER_BASE}/Libraries/IR/src/IRutils.cpp
+        ${FOLDER_BASE}/Libraries/MCP23S17/MCP23S17.cpp
+        ${FOLDER_BASE}/Libraries/RF24/RF24.cpp
+        ${FOLDER_BASE}/Libraries/SDCard/SDCard.cpp
+        ${FOLDER_BASE}/Libraries/TFT_ILI9163C/TFT_ILI9163C.cpp
+        ${FOLDER_BASE}/Libraries/WS2812/WS2812.cpp
+    )
+endif()
 
 set(Sming_C_SRCS 
-  /opt/Sming/Sming/Components/spiffs/src/spiffs_hydrogen.c
-  ${LIBRARY_FOLDER}/Adafruit_GFX/glcdfont.c
-  ${LIBRARY_FOLDER}/Adafruit_ILI9341/hspi.c
-  ${OTHERS_FOLDER}/Components/http-parser/http_parser.c
-  ${OTHERS_FOLDER}/Components/libb64/cdecode.c
-  ${OTHERS_FOLDER}/Components/libb64/cencode.c
-  ${OTHERS_FOLDER}/Components/ws_parser/ws_parser.c
-  ${OTHERS_FOLDER}/Components/libyuarel/yuarel.c
-  ${OTHERS_FOLDER}/Components/spiffs/src/spiffs_cache.c
-  ${OTHERS_FOLDER}/Components/spiffs/src/spiffs_gc.c
-  ${OTHERS_FOLDER}/Components/spiffs/src/spiffs_nucleus.c
-  ${OTHERS_FOLDER}/Components/spiffs/src/spiffs_check.c
+    ${FOLDER_BASE}/Arch/Esp8266/Components/spiffs/spiffs_sming.c
+    ${FOLDER_BASE}/Components/http-parser/http_parser.c
+    ${FOLDER_BASE}/Components/libb64/cdecode.c
+    ${FOLDER_BASE}/Components/libb64/cencode.c
+    ${FOLDER_BASE}/Components/libyuarel/yuarel.c
+    ${FOLDER_BASE}/Components/mqtt-codec/src/buffer.c
+    ${FOLDER_BASE}/Components/mqtt-codec/src/errors.c
+    ${FOLDER_BASE}/Components/mqtt-codec/src/message.c
+    ${FOLDER_BASE}/Components/mqtt-codec/src/parser.c
+    ${FOLDER_BASE}/Components/mqtt-codec/src/serialiser.c
+    ${FOLDER_BASE}/Components/spiffs/src/spiffs_cache.c
+    ${FOLDER_BASE}/Components/spiffs/src/spiffs_check.c
+    ${FOLDER_BASE}/Components/spiffs/src/spiffs_gc.c
+    ${FOLDER_BASE}/Components/spiffs/src/spiffs_hydrogen.c
+    ${FOLDER_BASE}/Components/spiffs/src/spiffs_nucleus.c
+    ${FOLDER_BASE}/Components/ws_parser/ws_parser.c
+    ${FOLDER_BASE}/Libraries/Adafruit_GFX/glcdfont.c
 )
-set(Sming_ASM_SRCS
-    /opt/Sming/Sming/Arch/Esp8266/Components/esp8266/irq_check.s
+
+if(SMING_ARCH STREQUAL "Esp8266")
+    list(APPEND Sming_C_SRCS 
+        ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266/crash_handler.c
+        ${FOLDER_BASE}/Arch/Esp8266/Components/fatfs/ff.c
+        ${FOLDER_BASE}/Arch/Esp8266/Components/spi_flash/flashmem.c
+        ${FOLDER_BASE}/Libraries/Adafruit_ILI9341/hspi.c
     )
+else(SMING_ARCH STREQUAL "Host")
+    list(APPEND Sming_C_SRCS 
+        ${FOLDER_BASE}/Arch/Host/Components/esp_hal/clk.c
+        ${FOLDER_BASE}/Arch/Host/Components/esp_hal/libc.c
+        ${FOLDER_BASE}/Arch/Host/Components/esp_hal/sleep.c
+        ${FOLDER_BASE}/Arch/Host/Components/esp_wifi/esp_wifi.c
+        ${FOLDER_BASE}/Arch/Host/Components/gdbstub/gdbstub.c
+        ${FOLDER_BASE}/Arch/Host/Components/heap/heap.c
+        ${FOLDER_BASE}/Arch/Host/Components/hostlib/except.c
+        ${FOLDER_BASE}/Arch/Host/Components/hostlib/hostlib.c
+        ${FOLDER_BASE}/Arch/Host/Components/hostlib/hostmsg.c
+        ${FOLDER_BASE}/Arch/Host/Components/libc/memmem.c
+    )
+endif()
+
+
+if(SMING_ARCH STREQUAL "Esp8266")
+    set(Sming_ASM_SRCS
+        /opt/Sming/Sming/Arch/Esp8266/Components/esp8266/irq_check.s
+        )
+else()
+    set(Sming_ASM_SRCS )
+endif()
 
 set(SmingIncludes 
     /opt/Sming/Sming/Arch/Esp8266/Components/Sdk/ESP8266_NONOS_SDK/include
@@ -378,3 +410,18 @@ set(SmingIncludes
     /opt/Sming/Sming/Arch/Esp8266/Components/gdbstub/appcode
     /opt/Sming/Sming/System/include/gdb
 )
+
+if(SMING_ARCH STREQUAL "Esp8266")
+    list(APPEND SmingIncludes 
+        /opt/Sming/Sming/Arch/Esp8266/Components/spi_flash/include
+        /opt/Sming/Sming/Arch/Esp8266/Components/esp_wifi/include
+        )
+else()
+    list(APPEND SmingIncludes 
+        /opt/Sming/Sming/Arch/Host/Components/spi_flash/include 
+        /opt/Sming/Sming/Arch/Host/Components/esp_wifi/include
+        )
+endif()
+
+
+

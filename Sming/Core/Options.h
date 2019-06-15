@@ -10,11 +10,11 @@
 
 /* #undef USE_ESP8266_ESP32_LINUX */
 
-/* #undef DEBUG_VERBOSE_LEVEL */
+#define  DEBUG_VERBOSE_LEVEL  2
 /* #undef ENABLE_CMD_EXECUTOR */
 /* #undef ENABLE_CUSTOM_HEAP */
-#define  ENABLE_CUSTOM_LWIP   
-#define  ENABLE_CUSTOM_PWM    
+/* #undef ENABLE_CUSTOM_LWIP */
+/* #undef ENABLE_CUSTOM_PWM */
 /* #undef ENABLE_ESPCONN */
 /* #undef ENABLE_GDB */
 /* #undef ENABLE_LWIPDEBUG */

@@ -1,19 +1,108 @@
+
+#if(NOT DEFINED SMING_ARCH ) # MATCHES "^$")
+#    set(SMING_ARCH Esp8266)
+#    message("Using default architecture Esp8266")
+#else()
+#    if(SMING_ARCH STREQUAL "Esp8266")
+#        message("Using architecture Esp8266")
+#    elseif(SMING_ARCH STREQUAL "Host") 
+#        message("Using architecture Host")
+#    else() 
+#        message(FATAL_ERROR "Invalid architecture ${SMING_ARCH}")
+#    endif()
+#endif()
+
+
+
+# To reduce time, just build one of each
+#set(debugCmakeJustTwoFiles false)
+#if(SMING_ARCH STREQUAL "")
+#    set(SMING_ARCH_IS_UNSET 1)
+#else()
+#    message("FOOEY")
+#endif()
+
 #=============================================================================#
 #                         Sming Library cmake script
 #=============================================================================#
 message("SMING LIBRARY")
+# build architecture - ESP8266, ESP32 or Linux?
+set(SMING_ARCH "Esp8266" CACHE STRING "Architecture chosen by the user at CMake configure time")
+# define the set of strings to which its value should be constrained:
+set_property(CACHE SMING_ARCH PROPERTY STRINGS Esp8266 Host Esp32)
+# Now cmake-gui knows to present a drop-down combo box for editing the "SMING_ARCH" cache entry, 
+# and it knows what the valid choices for this entry should be
+# TODO Validate command line entered value for SMING_ARCH
+
 message("=============")
+
+
+
+#include (cmake/SmingToolchain.cmake)
+
 cmake_minimum_required(VERSION 3.5)
 project(sming C CXX ASM)
+
+
+#=============================================================================#
+#                         User options 
+#=============================================================================#
+
+message("Options")
+message("-------")
+
+
+set(DEBUG_VERBOSE_LEVEL "2" CACHE STRING "Default debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0")
+set_property(CACHE DEBUG_VERBOSE_LEVEL PROPERTY STRINGS 0 1 2 3)
+set(SMING_DEBUG_PRINT_FILENAME_AND_LINE OFF CACHE BOOL "By default `debugf` does not print file name and line number.")
+
+option(SMING_ENABLE_CMD_EXECUTOR  "Enable CMD_EXECUTOR (OFF will save some memory)?" ON)
+option(SMING_ENABLE_CUSTOM_HEAP   "Enable custom memory allocator" OFF)
+option(SMING_ENABLE_CUSTOM_PWM    "Select custom PWM library implementation" ON)
+option(SMING_ENABLE_ESPCONN       "Enable espconn API for open-source lwip" OFF)
+option(SMING_ENABLE_GDB           "Enable Espressif gdbstubs" OFF)
+option(SMING_ENABLE_LWIPDEBUG     "Compile open-source lwip with debugging enabled" OFF)
+option(SMING_ENABLE_SSL           "Enable SSL functionality?" OFF)
+option(SMING_ENABLE_WPS           "Enable WPS" OFF)
+option(SMING_SSL_DEBUG            "Enable SSL_DEBUG" OFF)
+
+# also used by sming.cmake for terminal setup
+set(COM_SPEED_SERIAL                115200 CACHE STRING "Baud rate for serial connection (Note: Boards with 26MHz crystal will boot at 74880, i. e. set your terminal to this rate to receive messages from the ROM boot loader.")
+set_property(CACHE COM_SPEED_SERIAL PROPERTY STRINGS 921600 454800 460800 230400  115200  57600 74880  9600)
+
+set(SMING_ENABLE_CUSTOM_LWIP        lwip    CACHE STRING "select 'builtin' to use binary lwip from SDK, 'lwip' (default) or 'lwip2' (does not support espconn) to compile open source version from esp_open")
+set_property(CACHE SMING_ENABLE_CUSTOM_LWIP PROPERTY STRINGS builtin lwip lwip2)
+set(SMING_ENABLE_CUSTOM_PWM         ON CACHE BOOL "Select custom PWM library implementation")
+# TODO: Set automatically for RELEASE builds (use RELWITHDEBINFO for basic gdbstubs)
+set(SMING_RELEASE OFF CACHE BOOL "Disable debug functionality (do not add basic gdbstubs)")
+set(SDK_BASE $ENV(${ESP_}) CACHE PATH "Path to sdk base folder (e. g. path/to/esp-open-sdk/sdk). If empty, the internal SDK that comes with sming is used instead.")
+
+
+message("COM_SPEED_SERIAL           ${COM_SPEED_SERIAL}")
+message("SMING_ARCH                 ${SMING_ARCH}")
+message("DEBUG_VERBOSE_LEVEL        ${DEBUG_VERBOSE_LEVEL}")
+message("SMING_ENABLE_CMD_EXECUTOR  ${SMING_ENABLE_CMD_EXECUTOR}")
+message("SMING_ENABLE_CUSTOM_HEAP   ${SMING_ENABLE_CUSTOM_HEAP}")
+message("SMING_ENABLE_CUSTOM_LWIP   ${SMING_ENABLE_CUSTOM_LWIP}")
+message("SMING_ENABLE_CUSTOM_PWM    ${SMING_ENABLE_CUSTOM_PWM}")
+message("SMING_ENABLE_ESPCONN       ${SMING_ENABLE_ESPCONN}")
+message("SMING_ENABLE_GDB           ${SMING_ENABLE_GDB}")
+message("SMING_ENABLE_LWIPDEBUG     ${SMING_ENABLE_LWIPDEBUG}")
+message("SMING_ENABLE_SSL           ${SMING_ENABLE_SSL}")
+message("SMING_ENABLE_WPS           ${SMING_ENABLE_WPS}")
+message("SMING_SSL_DEBUG            ${SMING_SSL_DEBUG}")
+
+
 # The version number.
 set (VERSION_MAJOR 3)
 set (VERSION_MINOR 8)
 set (VERSION_POINT 1)
-
+message("Project: Sming, version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_POINT}")
 
 #=============================================================================#
 #                         System Paths, compiler and config
 #=============================================================================#
+
 
 #set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/cmake/SmingToolchain.cmake)
 
@@ -28,6 +117,8 @@ else()
 endif()
 
 ### Hardcoded paths to compiler - is there a better way?
+message("ESP_HOME=$ENV{ESP_HOME}")
+message("CMAKE_TOOLCHAIN_FILE ${CMAKE_TOOLCHAIN_FILE}")
 set(CMAKE_CXX_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-g++)
 set(CMAKE_C_COMPILER   $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc)
 set(CMAKE_ASM_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc)
@@ -44,16 +135,16 @@ SET(CMAKE_C_ARCHIVE_CREATE   "<CMAKE_AR> cru <TARGET>  <OBJECTS>")
 
 
 # supress compiler checking
-set(CMAKE_C_COMPILER_WORKS 1)
-set(CMAKE_CXX_COMPILER_WORKS 1)
-set(CMAKE_ASM_COMPILER_WORKS 1)
+#set(CMAKE_C_COMPILER_WORKS 1)
+#set(CMAKE_CXX_COMPILER_WORKS 1)
+#set(CMAKE_ASM_COMPILER_WORKS 1)
 
 # supress determining compiler id
 #set(CMAKE_C_COMPILER_ID_RUN 1)
 #set(CMAKE_CXX_COMPILER_ID_RUN 1)
 #set(CMAKE_ASM_COMPILER_ID_RUN 1)
 
-message("CXX: ${CMAKE_CXX_COMPILER}")
+message("CXX: ${CMAKE_CXX_COMPILER} $<CXX_COMPILER_ID>")
 message("C:   ${CMAKE_C_COMPILER}")
 message("ASM: ${CMAKE_ASM_COMPILER}")
 
@@ -68,15 +159,6 @@ else()
     set(MFORCE32CompilerOption "")
 ENDIF()
 message("MFORCE32 = ${MFORCE32}")
-#TODO remove PROGMEM_FLAGS
-# Setting the compiier option for PROGMEM was really difficult,especially using target_compile_options.
-# Brackets spaces and  quotes are all problematic for cmake strings and lists.
-#set(PROGMEM_FLAGS "-DPROGMEM_L32=\"__attribute__((aligned(4)))  __attribute__((section(\\\".irom.text\\\")))\" "    )
-#message(PROGMEM_FLAGS)
-#message(${PROGMEM_FLAGS})
-
-
-
 
 
 #include($ENV{SMING_HOME}/cmake/sming.cmake)
@@ -147,46 +229,7 @@ set(ESPTOOL $ENV{ESP_HOME}/esptool/esptool.py)
 #message("ESPTOOL_APP $(ESPTOOL_APP) ESPTOOL_SUBDIRS LIST=${ESPTOOL_SUBDIRS} ESPTOOL_APP=$(ESPTOOL_APP).")
 
 
-#=============================================================================#
-#                         User options for Building
-#=============================================================================#
-
-message("Options")
-message("-------")
-# should we target ESP8266, ESP32 or Linux?
-option (USE_ESP8266_ESP32_LINUX  "Set ESP8266 as the target(0), ESP32[unsoprted yet] (1), or Linux(2)" 0) 
-
-#Optionally suppress this feature from the code (presumably for space)
-
-option(DEBUG_VERBOSE_LEVEL  "DEBUG_VERBOSE_LEVEL (debug=3, info=2, warn=1, error=0)?" 0)
-option(ENABLE_CMD_EXECUTOR  "ENABLE_CMD_EXECUTOR (0 or 1)?" ON)
-option(ENABLE_CUSTOM_HEAP   "ENABLE_CUSTOM_HEAP (0 or 1)?" OFF)
-option(ENABLE_CUSTOM_LWIP   "ENABLE_CUSTOM_LWIP (0 or 1)?" ON)
-option(ENABLE_CUSTOM_PWM    "ENABLE_CUSTOM_PWM (0 or 1)?" ON)
-option(ENABLE_ESPCONN       "ENABLE_ESPCONN (0 or 1)?" OFF)
-option(ENABLE_GDB           "ENABLE_GDB ()?" OFF)
-option(ENABLE_LWIPDEBUG     "ENABLE_LWIPDEBUG ()?" 0)
-option(ENABLE_SSL           "ENABLE_SSL (0 or 1)?" OFF)
-option(ENABLE_WPS           "ENABLE_WPS (0 or 1)?" OFF)
-option(SSL_DEBUG            "SSL_DEBUG()?" 0)
-
-
-set(COM_SPEED_SERIAL 11520)
-
-message("USE_ESP8266_ESP32_LINUX ${USE_ESP8266_ESP32_LINUX}")
-message("COM_SPEED_SERIAL     ${COM_SPEED_SERIAL}")
-message("DEBUG_VERBOSE_LEVEL  ${DEBUG_VERBOSE_LEVEL}")
-message("ENABLE_CMD_EXECUTOR  ${ENABLE_CMD_EXECUTOR}")
-message("ENABLE_CUSTOM_HEAP   ${ENABLE_CUSTOM_HEAP}")
-message("ENABLE_CUSTOM_LWIP   ${ENABLE_CUSTOM_LWIP}")
-message("ENABLE_CUSTOM_PWM    ${ENABLE_CUSTOM_PWM}")
-message("ENABLE_ESPCONN       ${ENABLE_ESPCONN}")
-message("ENABLE_GDB           ${ENABLE_GDB}")
-message("ENABLE_LWIPDEBUG     ${ENABLE_LWIPDEBUG}")
-message("ENABLE_SSL           ${ENABLE_SSL}")
-message("ENABLE_WPS           ${ENABLE_WPS}")
-message("SSL_DEBUG            ${SSL_DEBUG}")
-
+set(THIRD_PARTY_DIR ${SMING_HOME}/third-party)
 
 #include($ENV{SMING_HOME}/cmake/core.cmake)
 
@@ -198,9 +241,9 @@ message("SSL_DEBUG            ${SSL_DEBUG}")
 
 include (cmake/srcs.cmake)
 
-set(COMPONENT_SRCS ${Sming_CXX_SOURCES})
-set(COMPONENT_ASM_SRCS ${Sming_ASM_SRCS})
-set(COMPONENT_C_SRCS ${Sming_C_SRCS})
+set(COMPONENT_SRCS      ${Sming_CXX_SOURCES})
+set(COMPONENT_ASM_SRCS  ${Sming_ASM_SRCS})
+set(COMPONENT_C_SRCS    ${Sming_C_SRCS})
 #message("COMPONENT_SRCS  ${COMPONENT_SRCS} ${COMPONENT_ASM_SRCS} ${COMPONENT_C_SRCS}")
 
 set(COMPONENT_PRIV_INCLUDEDIRS  ${LIBRARY_FOLDER}/Adafruit_BME280_Library/src)
@@ -218,18 +261,85 @@ message("CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
 #=============================================================================#
 
 include(cmake/CompilerOptions.cmake)
+# Note it is advised to use target_compile_options, than to set CMAKE_CXX_FLAGS directly
 
-# Note its better to use target_compile_options, than to set CMAKE_CXX_FLAGS directly
+ 
+#=============================================================================#
+#                         Submodules
+#=============================================================================#
+
+
+# Fetch git submodules that are not already present and apply patches
+find_package(Git)
+if(NOT Git_FOUND)
+    message(FATAL_ERROR "Git not found: Cannot check out submodules")
+endif()
+
+# run git command in the given working directory and write command output to a variable named 'git_output'
+function(GIT_RUN_IN working_directory)
+    message("Calling Git command: ${GIT_EXECUTABLE} ARGN:${ARGN} working_directory:${working_directory}")
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} ${ARGN}
+        WORKING_DIRECTORY "${working_directory}"
+        RESULT_VARIABLE git_ok
+        OUTPUT_VARIABLE git_output
+        ERROR_VARIABLE git_error
+    )
+    if (NOT git_ok EQUAL 0)
+        message(FATAL_ERROR "Git command failed:\n${git_error}")
+    endif()
+    set(git_output "${git_output}" PARENT_SCOPE)
+endfunction()
+
+# init/checkout a submodule and optionally apply a patch file from ${path}/../.patches matching the name of the submodule
+# Arguments:
+# - path: absolute path to submodule
+# - file_to_check: path to a file (relative to submodule, i. e. ${path}) that will be present in the submodule if it has been prepared already and should not be modified
+function(PREPARE_SUBMODULE path file_to_check)
+    if (EXISTS "${path}/${file_to_check}")
+        return()
+    endif()    
+    get_filename_component("${path}" module_name NAME)
+    get_filename_component("${path}" basedir DIRECTORY)
+    message("Preparing submodule ${path}...")
+    git_run_in("${SMING_HOME}" submodule update --init --recursive "${path}")    
+    set(patch_file "${basedir}/.patches/${module_name}.patch")
+    if (EXISTS "${patch_file}")
+        git_run_in("${path}" apply -v "${patch_file}" --ignore-whitespace --whitespace=nowarn)
+    endif()
+endfunction()
+
+
+# Prepare Arduino libraries embedded as submodules
+if(1==0) # Not yet
+    git_run_in("${SMING_HOME}" "submodule status Libraries")
+    string(REPLACE ";" "\\\\;" git_output "${git_output}") # split lines
+    string(REPLACE "\n" ";" git_output "${git_output}")
+    foreach(line IN LISTS git_output)
+        string(STRIP "${line}" line)
+        if (NOT line STREQUAL "")
+            string(REGEX MATCH "Libraries[^ \t]+" lib "${line}")
+            prepare_submodule("${SMING_HOME}/${lib}" "library.properties")
+        endif()
+    endforeach()
+
+    prepare_submodule("${THIRD_PARTY_DIR}/rboot" "Makefile")
+    prepare_submodule("${THIRD_PARTY_DIR}/spiffs" "makefile")
+    prepare_submodule("${THIRD_PARTY_DIR}/http-parser" "Makefile")
+    prepare_submodule("${THIRD_PARTY_DIR}/ws_parser" "Makefile")
+
+endif()
+
+
 
 #=============================================================================#
 #                         Targets and dependencies
 #=============================================================================#
 
 add_library(sming  ${COMPONENT_ASM_SRCS} )
-
-if(false)
-    target_sources(${PROJECT_NAME} PRIVATE ${OTHERS_FOLDER}/Components/http-parser/http_parser.c)
-    target_sources(${PROJECT_NAME} PRIVATE ${CORE_FOLDER}/DateTime.cpp)
+if(debugCmakeJustTwoFiles)
+    target_sources(${PROJECT_NAME} PRIVATE ${FOLDER_BASE}/Components/http-parser/http_parser.c)
+    target_sources(${PROJECT_NAME} PRIVATE ${FOLDER_BASE}/Core/DateTime.cpp)
 else()
     target_sources(${PROJECT_NAME} PRIVATE ${COMPONENT_C_SRCS} )
     target_sources(${PROJECT_NAME} PRIVATE ${COMPONENT_SRCS})
@@ -243,22 +353,41 @@ include_directories(sming PUBLIC
         ${SmingIncludes}
         )
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED on)
+if(SMING_ARCH==Esp8266)
+    add_definitions( -DARCH_ESP8266 ${MFORCE32})
+elseif(SMING_ARCH==Host)
+    add_definitions( -DARCH_HOST )
+endif()
+
+if(SMING_ENABLE_CMD_EXECUTOR)
+    add_definitions( -DENABLE_CMD_EXECUTOR=1 )
+endif()
+if(SMING_ENABLE_CUSTOM_HEAP)
+endif()
+if(SMING_ENABLE_CUSTOM_PWM)
+endif()
+if(SMING_ENABLE_ESPCONN)
+endif()
+if(SMING_ENABLE_GDB)
+endif()
+if(SMING_ENABLE_LWIPDEBUG)
+endif()
+if(SMING_ENABLE_SSL)
+endif()
+if(SMING_ENABLE_WPS)
+endif()
+if(SMING_SSL_DEBUG)
+endif()
+
 
 # and esp8266 build definitions
 add_definitions( 
         #sming PUBLIC
-        # I cant get PROGMEM_L32 to work here, (set copiler flags instead as a workaround):                                
-        #-DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))" )
-        -DARCH_ESP8266
-        ${MFORCE32}
         -D__ets__ 
         -DARDUINO=106
         -DCOM_SPEED_SERIAL=11520
         -DDEBUG_PRINT_FILENAME_AND_LINE=0 
         -DDEBUG_VERBOSE_LEVEL=2 
-        -DENABLE_CMD_EXECUTOR=1 
         -DESP8266=1 
         -DF_CPU=80000000L
         -DFLASHMODE_DOUT
@@ -286,13 +415,6 @@ set(MY_RELEASE_OPTIONS -Os -DSMING_RELEASE=1 -DLWIP_NOASSERT)
 
 # some other options and link libraries
 target_compile_options(sming PUBLIC -U__STRICT_ANSI__)
-if(ENABLE_GDB)
-    target_compile_options(sming PRIVATE -Og -ggdb -DGDBSTUB_FREERTOS=0 -DENABLE_GDB=1 -DGDBSTUB_CTRLC_BREAK=0 )
-endif()
-
-if(SSL_DEBUG)
-    target_compile_options(sming PRIVATE -DSSL_DEBUG=1 -DDEBUG_TLS_MEM=1 )
-endif()
 
 if(ENABLE_SSL)
     #TODO complete this
@@ -315,6 +437,21 @@ if(ENABLE_SSL)
 	#$(vecho) "Generating unique certificate and key. This may take some time"
 	#$(Q) mkdir -p $(CURDIR)/include/ssl/
 	#AXDIR=$(CURDIR)/include/ssl/ $(ARCH_COMPONENTS)/axtls-8266/axtls-8266/tools/make_certs.sh
+endif()
+
+if (SMING_ENABLE_WPS)
+    target_compile_definitions(sming PUBLIC ENABLE_WPS=1)
+    target_link_libraries(sming INTERFACE "${SDK_BASE}/lib/libwps.a")
+endif()
+
+if (SMING_ENABLE_SSL)
+    prepare_submodule("${THIRD_PARTY_DIR}/axtls-8266" "Makefile")
+    add_subdirectory("${THIRD_PARTY_DIR}/axtls-8266")
+    target_link_libraries(sming PUBLIC axtls)
+    # hack: some files of axtls reference symbols from sming => we need a circular dependency here
+    # TODO: figure out a better way
+    cmake_policy(SET CMP0079 NEW)
+    target_link_libraries(axtls INTERFACE sming)
 endif()
 
 
