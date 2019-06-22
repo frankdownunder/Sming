@@ -35,6 +35,8 @@ if(NOT DEFINED SMING_ARCH OR SMING_ARCH STREQUAL "Esp8266" )
     set(tool_prefix "${SDK_BASE}/xtensa-lx106-elf/bin/xtensa-lx106-elf-")
     set(CMAKE_C_COMPILER ${tool_prefix}gcc)
     set(CMAKE_CXX_COMPILER ${tool_prefix}g++) 
+    set(CMAKE_CXX_COMPILER_AR ${tool_prefix}ar) 
+
     # TODO: Only gcc or g++ is is needed, cmake can figure out the other one automatically.
     
     # supress compiler checking
@@ -48,10 +50,10 @@ if(NOT DEFINED SMING_ARCH OR SMING_ARCH STREQUAL "Esp8266" )
     set(CMAKE_ASM_COMPILER_ID_RUN 1)
 
 
-    set(CMAKE_C_FLAGS_INIT "-Wpointer-arith -Wundef -mlongcalls -nostdlib -Wl,-EL -fdata-sections -ffunction-sections -DICACHE_FLASH")
-    set(CMAKE_ASM_FLAGS_INIT "${CMAKE_C_FLAGS_INIT}")
-    set(CMAKE_CXX_FLAGS_INIT "${CMAKE_C_FLAGS_INIT} -fno-rtti -fno-exceptions -felide-constructors")
-    set(CMAKE_EXE_LINKER_FLAGS_INIT "-nostdlib -Wl,-static -Wl,--gc-sections")
+    #set(CMAKE_C_FLAGS_INIT "-Wpointer-arith -Wundef -mlongcalls -nostdlib -Wl,-EL -fdata-sections -ffunction-sections -DICACHE_FLASH")
+    #set(CMAKE_ASM_FLAGS_INIT "${CMAKE_C_FLAGS_INIT}")
+    #set(CMAKE_CXX_FLAGS_INIT "${CMAKE_C_FLAGS_INIT} -fno-rtti ")
+    #set(CMAKE_EXE_LINKER_FLAGS_INIT "-nostdlib -Wl,-static -Wl,--gc-sections")
     
     # Note: we use 'Os' due to the space constraints, also O2 and other stuff may try to link to 
     # symbols not present in libmicroc. 
@@ -79,6 +81,7 @@ endif()
 message("CXX: ${CMAKE_CXX_COMPILER}")
 message("C:   ${CMAKE_C_COMPILER}")
 message("ASM: ${CMAKE_ASM_COMPILER}")
+message("AR : ${CMAKE_CXX_COMPILER_AR}")
 
 
 # Add current directory to CMake Module path automatically

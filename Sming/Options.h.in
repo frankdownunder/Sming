@@ -7,13 +7,18 @@
 
 #define SMING_VERSION  "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_POINT@"
 
+//TODO find way to do this better
+#ifndef ARCH_ESP8266  
+#ifndef ARCH_HOST
+#cmakedefine  ARCH_ESP8266  
+#cmakedefine  ARCH_HOST
+#endif
+#endif
 
-#cmakedefine  USE_ESP8266_ESP32_LINUX
-
-#cmakedefine  DEBUG_VERBOSE_LEVEL  @DEBUG_VERBOSE_LEVEL@
+#define       DEBUG_VERBOSE_LEVEL  @DEBUG_VERBOSE_LEVEL@
 #cmakedefine  ENABLE_CMD_EXECUTOR  
 #cmakedefine  ENABLE_CUSTOM_HEAP   
-#cmakedefine  ENABLE_CUSTOM_LWIP   
+//#define       ENABLE_CUSTOM_LWIP   @ENABLE_CUSTOM_LWIP@
 #cmakedefine  ENABLE_CUSTOM_PWM    
 #cmakedefine  ENABLE_ESPCONN       
 #cmakedefine  ENABLE_GDB           

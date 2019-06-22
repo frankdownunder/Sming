@@ -15,7 +15,7 @@
 
 
 # To reduce time, just build one of each
-#set(debugCmakeJustTwoFiles false)
+set(debugCmakeJustTwoFiles false)
 #if(SMING_ARCH STREQUAL "")
 #    set(SMING_ARCH_IS_UNSET 1)
 #else()
@@ -75,7 +75,7 @@ set_property(CACHE SMING_ENABLE_CUSTOM_LWIP PROPERTY STRINGS builtin lwip lwip2)
 set(SMING_ENABLE_CUSTOM_PWM         ON CACHE BOOL "Select custom PWM library implementation")
 # TODO: Set automatically for RELEASE builds (use RELWITHDEBINFO for basic gdbstubs)
 set(SMING_RELEASE OFF CACHE BOOL "Disable debug functionality (do not add basic gdbstubs)")
-set(SDK_BASE $ENV(${ESP_}) CACHE PATH "Path to sdk base folder (e. g. path/to/esp-open-sdk/sdk). If empty, the internal SDK that comes with sming is used instead.")
+set(SDK_BASE $ENV{ESP_HOME} CACHE PATH "Path to sdk base folder (e. g. path/to/esp-open-sdk/sdk). If empty, the internal SDK that comes with sming is used instead." FORCE)
 
 
 message("COM_SPEED_SERIAL           ${COM_SPEED_SERIAL}")
@@ -113,15 +113,19 @@ file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
 if(EXISTS "${LOC_PATH}")
     message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
 else()
-    message("Building in directory ${PROJECT_BINARY_DIR}/CMakeLists.txt        ${CMAKE_MODULE_PATH}")
+    message("Building from CMakeLists.txt in directory ${PROJECT_BINARY_DIR}        CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}")
 endif()
 
 ### Hardcoded paths to compiler - is there a better way?
 message("ESP_HOME=$ENV{ESP_HOME}")
-message("CMAKE_TOOLCHAIN_FILE ${CMAKE_TOOLCHAIN_FILE}")
-set(CMAKE_CXX_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-g++)
-set(CMAKE_C_COMPILER   $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc)
-set(CMAKE_ASM_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc)
+if(DEFINED CMAKE_TOOLCHAIN_FILE)
+    message("CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+else()
+    message("No toolchain specified on comand line")
+endif()
+#set(CMAKE_CXX_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-g++)
+#set(CMAKE_C_COMPILER   $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc)
+#set(CMAKE_ASM_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc)
 
 SET(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> cru <TARGET>  <OBJECTS>")
 SET(CMAKE_C_ARCHIVE_CREATE   "<CMAKE_AR> cru <TARGET>  <OBJECTS>")
@@ -229,7 +233,7 @@ set(ESPTOOL $ENV{ESP_HOME}/esptool/esptool.py)
 #message("ESPTOOL_APP $(ESPTOOL_APP) ESPTOOL_SUBDIRS LIST=${ESPTOOL_SUBDIRS} ESPTOOL_APP=$(ESPTOOL_APP).")
 
 
-set(THIRD_PARTY_DIR ${SMING_HOME}/third-party)
+set(THIRD_PARTY_DIR $ENV{SMING_HOME}/third-party)
 
 #include($ENV{SMING_HOME}/cmake/core.cmake)
 
@@ -262,6 +266,13 @@ message("CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
 
 include(cmake/CompilerOptions.cmake)
 # Note it is advised to use target_compile_options, than to set CMAKE_CXX_FLAGS directly
+
+foreach(SRC in ${COMPONENT_SRCS})
+    get_filename_component(SRCFILENAME ${SRC} NAME)
+    string(REGEX REPLACE "\\.[^.]*$" "" SRC_NAME ${SRCFILENAME})
+    #message("SRC_WITHOUT_EXT= ${SRC_NAME}")
+    set_source_files_properties(${SRC} PROPERTIES COMPILE_FLAGS -DCUST_FILE_BASE=${SRC_NAME})
+endforeach()
 
  
 #=============================================================================#
@@ -335,8 +346,9 @@ endif()
 #=============================================================================#
 #                         Targets and dependencies
 #=============================================================================#
+#message("COMPONENT_SRCS  ${COMPONENT_SRCS} ${COMPONENT_ASM_SRCS} ${COMPONENT_C_SRCS}")
 
-add_library(sming  ${COMPONENT_ASM_SRCS} )
+add_library(sming  ${COMPONENT_SRCS} )
 if(debugCmakeJustTwoFiles)
     target_sources(${PROJECT_NAME} PRIVATE ${FOLDER_BASE}/Components/http-parser/http_parser.c)
     target_sources(${PROJECT_NAME} PRIVATE ${FOLDER_BASE}/Core/DateTime.cpp)
@@ -349,72 +361,21 @@ set_property(TARGET sming PROPERTY OUTPUT_NAME sming)
 
 
 # esp8266 include directories
-include_directories(sming PUBLIC
+include_directories(sming 
         ${SmingIncludes}
         )
 
-if(SMING_ARCH==Esp8266)
-    add_definitions( -DARCH_ESP8266 ${MFORCE32})
-elseif(SMING_ARCH==Host)
-    add_definitions( -DARCH_HOST )
-endif()
-
-if(SMING_ENABLE_CMD_EXECUTOR)
-    add_definitions( -DENABLE_CMD_EXECUTOR=1 )
-endif()
-if(SMING_ENABLE_CUSTOM_HEAP)
-endif()
-if(SMING_ENABLE_CUSTOM_PWM)
-endif()
-if(SMING_ENABLE_ESPCONN)
-endif()
-if(SMING_ENABLE_GDB)
-endif()
-if(SMING_ENABLE_LWIPDEBUG)
-endif()
-if(SMING_ENABLE_SSL)
-endif()
-if(SMING_ENABLE_WPS)
-endif()
-if(SMING_SSL_DEBUG)
-endif()
-
 
 # and esp8266 build definitions
-add_definitions( 
-        #sming PUBLIC
-        -D__ets__ 
-        -DARDUINO=106
-        -DCOM_SPEED_SERIAL=11520
-        -DDEBUG_PRINT_FILENAME_AND_LINE=0 
-        -DDEBUG_VERBOSE_LEVEL=2 
-        -DESP8266=1 
-        -DF_CPU=80000000L
-        -DFLASHMODE_DOUT
-        -DICACHE_FLASH 
-        -DLED_BUILTIN=2
-        -DLWIP_FEATURES=1
-        -DLWIP_IPV6=0
-        -DLWIP_OPEN_SRC
-        -DSDK_INTERNAL 
-        -DSDK_PWM_PERIOD_COMPAT_MODE=1 
-        -DSMING_INCLUDED=1 
-        -DTCP_MSS=536  
-        -DUSE_OPTIMIZE_PRINTF   #// defined in user_config.h so dont need it here?
-        )
-        #-DARDUINO_ARCH_ESP8266
         #-DARDUINO_ESP8266_GENERIC  
-        #-DCUST_FILE_BASE=Print              # What is this for?
         #@-DARDUINO_ARCH_ESP8266 \"-DARDUINO_BOARD=\"ESP8266_GENERIC\"\" 
         #@-DARDUINO_BOARD="ESP8266_WEMOS_D1MINI"
         #-DARDUINO_ESP8266_WEMOS_D1MINI
 
 
-set(MY_DEBUG_OPTIONS  -Os -O3 )
-set(MY_RELEASE_OPTIONS -Os -DSMING_RELEASE=1 -DLWIP_NOASSERT)
 
 # some other options and link libraries
-target_compile_options(sming PUBLIC -U__STRICT_ANSI__)
+#target_compile_options(sming PUBLIC -U__STRICT_ANSI__)
 
 if(ENABLE_SSL)
     #TODO complete this
@@ -455,15 +416,12 @@ if (SMING_ENABLE_SSL)
 endif()
 
 
-
 target_compile_options(sming PUBLIC $<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>)
 target_compile_options(sming PUBLIC $<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>)
 target_compile_options(sming PUBLIC ${WARNNGS} )
 target_compile_options(sming PUBLIC ${COMMON_FLAGS} )
 target_compile_options(sming PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${CPLUSPLUSONLY_FLAGS}> )
 
-set(CMAKE_CXX_FLAGS   "${CMAKE_CXX_FLAGS} ${PROGMEM_FLAGS}")
-set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} ${PROGMEM_FLAGS}")
 message("CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 
 #target_compile_options(sming PUBLIC [=[-DPROGMEM_L32="__attribute__((aligned(4)))]=] [=[__attribute__((section(\".irom.text\")))"]=])
@@ -484,21 +442,19 @@ add_custom_command(
         -P "/opt/Sming/Sming/cmake/autoIncrementScript.cmake"
 )
 
+if(SMING_ARCH STREQUAL Esp8266)
+    set(ARCH_ESP8266 true)
+elseif(SMING_ARCH STREQUAL Host)
+    set(ARCH_HOST true )
+endif()
 
 # configure a header file to pass some of the CMake settings
 # to the source code
-configure_file (
-  "${PROJECT_SOURCE_DIR}/Options.h.in"
-  "${PROJECT_SOURCE_DIR}/Core/Options.h"
-  )
-# add the binary tree to the search path for include files
-# so that we will find any generacted files in there.
-# But there arent nany at present
-#include_directories("${PROJECT_BINARY_DIR}")
+configure_file ("${PROJECT_SOURCE_DIR}/Options.h.in"      "${PROJECT_SOURCE_DIR}/Core/Options.h"  )
+configure_file ("${PROJECT_SOURCE_DIR}/OptionsArch.h.in"  "${PROJECT_SOURCE_DIR}/Core/OptionsArch.h"  )
 
 
 #axtls lwip2-536-feat bearssl 
-
 
 # When building the executable....
 # Append sming library as part of target executable
