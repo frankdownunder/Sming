@@ -1,26 +1,21 @@
 
-#if(NOT DEFINED SMING_ARCH ) # MATCHES "^$")
-#    set(SMING_ARCH Esp8266)
-#    message("Using default architecture Esp8266")
-#else()
-#    if(SMING_ARCH STREQUAL "Esp8266")
-#        message("Using architecture Esp8266")
-#    elseif(SMING_ARCH STREQUAL "Host") 
-#        message("Using architecture Host")
-#    else() 
-#        message(FATAL_ERROR "Invalid architecture ${SMING_ARCH}")
-#    endif()
-#endif()
+if(NOT DEFINED SMING_ARCH ) # MATCHES "^$")
+    set(SMING_ARCH Esp8266)
+    message("Using default architecture Esp8266")
+else()
+    if(SMING_ARCH STREQUAL "Esp8266")
+        message("Using architecture Esp8266")
+    elseif(SMING_ARCH STREQUAL "Host") 
+       message("Using architecture Host")
+    else() 
+        message(FATAL_ERROR "Invalid architecture ${SMING_ARCH}")
+    endif()
+endif()
 
 
 
-# To reduce time, just build one of each
-set(debugCmakeJustTwoFiles false)
-#if(SMING_ARCH STREQUAL "")
-#    set(SMING_ARCH_IS_UNSET 1)
-#else()
-#    message("FOOEY")
-#endif()
+# To reduce time n testing, just build a few
+set(debugCmakeJustTwoFiles true)
 
 #=============================================================================#
 #                         Sming Library cmake script
@@ -38,15 +33,16 @@ message("=============")
 
 
 
-#include (cmake/SmingToolchain.cmake)
+#include(cmake/SmingToolchain.cmake)
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.9)
 project(sming C CXX ASM)
 
 
 #=============================================================================#
 #                         User options 
 #=============================================================================#
+
 
 message("Options")
 message("-------")
@@ -99,12 +95,27 @@ set (VERSION_MINOR 8)
 set (VERSION_POINT 1)
 message("Project: Sming, version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_POINT}")
 
+
+
+# Apply debug settings to every source file. Unfortunately, there is no generator expression to reference the current source file :(
+function(SMING_APPLY_DEBUG_SETTINGS target)
+    get_target_property(tgt_sources ${target} SOURCES)
+    foreach(src IN LISTS tgt_sources)
+        get_filename_component(basename "${src}" NAME_WE)
+        set_property(SOURCE "${src}" APPEND PROPERTY COMPILE_DEFINITIONS "DEBUG_VERBOSE_LEVEL=${SMING_DEBUG_VERBOSE_LEVEL}" "CUST_FILE_BASE=${basename}" "DEBUG_PRINT_FILENAME_AND_LINE=$<BOOL:${SMING_DEBUG_PRINT_FILENAME_AND_LINE}>")
+    endforeach()
+endfunction()
+
+
 #=============================================================================#
 #                         System Paths, compiler and config
 #=============================================================================#
 
+message("SMING_HOME=$ENV{SMING_HOME}")
+message("ESP_HOME=$ENV{ESP_HOME}")
 
-#set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/cmake/SmingToolchain.cmake)
+set(CMAKE_TOOLCHAIN_FILE ${SMING_HOME}/cmake/SmingToolchain.cmake)
+
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
@@ -117,11 +128,10 @@ else()
 endif()
 
 ### Hardcoded paths to compiler - is there a better way?
-message("ESP_HOME=$ENV{ESP_HOME}")
 if(DEFINED CMAKE_TOOLCHAIN_FILE)
     message("CMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
 else()
-    message("No toolchain specified on comand line")
+    message("No toolchain specified on command line")
 endif()
 #set(CMAKE_CXX_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-g++)
 #set(CMAKE_C_COMPILER   $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc)
@@ -180,7 +190,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 set(FLASH_SIZE 4m)
 
 # system magic, detect arduino dir and system extension
-# TODO - detect toolchain perhaps?  Is it useful to know where the arduino folders are?
+#        Is it even useful to know where the arduino folders are?
+# TODO - detect toolchain perhaps?  
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
     set(USER_HOME $ENV{HOME})
     set(SYSTEM_EXTENSION "")
@@ -243,7 +254,7 @@ set(THIRD_PARTY_DIR $ENV{SMING_HOME}/third-party)
 #=============================================================================#
 
 
-include (cmake/srcs.cmake)
+include(cmake/srcs.cmake)
 
 set(COMPONENT_SRCS      ${Sming_CXX_SOURCES})
 set(COMPONENT_ASM_SRCS  ${Sming_ASM_SRCS})
@@ -266,13 +277,8 @@ message("CMAKE_CURRENT_SOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
 
 include(cmake/CompilerOptions.cmake)
 # Note it is advised to use target_compile_options, than to set CMAKE_CXX_FLAGS directly
-
-foreach(SRC in ${COMPONENT_SRCS})
-    get_filename_component(SRCFILENAME ${SRC} NAME)
-    string(REGEX REPLACE "\\.[^.]*$" "" SRC_NAME ${SRCFILENAME})
-    #message("SRC_WITHOUT_EXT= ${SRC_NAME}")
-    set_source_files_properties(${SRC} PROPERTIES COMPILE_FLAGS -DCUST_FILE_BASE=${SRC_NAME})
-endforeach()
+AddCompilerOptions()
+AddDefine_CustFileBase(${COMPONENT_SRCS})
 
  
 #=============================================================================#
@@ -361,9 +367,7 @@ set_property(TARGET sming PROPERTY OUTPUT_NAME sming)
 
 
 # esp8266 include directories
-include_directories(sming 
-        ${SmingIncludes}
-        )
+include_directories( ${SmingIncludes} )
 
 
 # and esp8266 build definitions
@@ -416,9 +420,17 @@ if (SMING_ENABLE_SSL)
 endif()
 
 
-target_compile_options(sming PUBLIC $<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>)
-target_compile_options(sming PUBLIC $<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>)
-target_compile_options(sming PUBLIC ${WARNNGS} )
+#target_compile_options(sming PUBLIC $<$<CONFIG:DEBUG>:${MY_DEBUG_OPTIONS}>)
+#target_compile_options(sming PUBLIC $<$<CONFIG:RELEASE>:${MY_RELEASE_OPTIONS}>)
+#TODO Use the "better" method
+if(true)
+    message("Support only for debug at present")
+    target_compile_options(sming PUBLIC ${MY_DEBUG_OPTIONS})
+else()
+    target_compile_options(sming PUBLIC ${MY_RELEASE_OPTIONS})
+endif()
+
+target_compile_options(sming PUBLIC ${WARNINGS} )
 target_compile_options(sming PUBLIC ${COMMON_FLAGS} )
 target_compile_options(sming PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${CPLUSPLUSONLY_FLAGS}> )
 

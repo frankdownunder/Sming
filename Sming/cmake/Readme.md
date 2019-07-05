@@ -4,7 +4,7 @@ The cmake build system for the ESP8266 sming library provides an alternative to 
 - native port to Windows
 - being able to run and debug on linux
 - pave the way to ESP32 migration
-- super fast builds with Ninja
+- super fast builds with Ninja or make
 
 
 ## Preparatory steps

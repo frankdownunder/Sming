@@ -15,12 +15,12 @@
 #=============================================================================#
 #set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_NAME Sming)
-set(CMAKE_SYSTEM_PROCESSOR l106)
 message("SMING_ARCH ${SMING_ARCH}")
 
 
 if(NOT DEFINED SMING_ARCH OR SMING_ARCH STREQUAL "Esp8266" )
-    message("SMING_ARCH ${SMING_ARCH}")
+    set(CMAKE_SYSTEM_PROCESSOR l106)
+    
     #set(CMAKE_CXX_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-g++  )
     #set(CMAKE_C_COMPILER   $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc  )
     #set(CMAKE_ASM_COMPILER $ENV{ESP_HOME}/xtensa-lx106-elf/bin/xtensa-lx106-elf-gcc  )
@@ -35,7 +35,9 @@ if(NOT DEFINED SMING_ARCH OR SMING_ARCH STREQUAL "Esp8266" )
     set(tool_prefix "${SDK_BASE}/xtensa-lx106-elf/bin/xtensa-lx106-elf-")
     set(CMAKE_C_COMPILER ${tool_prefix}gcc)
     set(CMAKE_CXX_COMPILER ${tool_prefix}g++) 
-    set(CMAKE_CXX_COMPILER_AR ${tool_prefix}ar) 
+    set(CMAKE_ASM_COMPILER ${tool_prefix}gcc)
+    #set(CMAKE_CXX_COMPILER_AR ${tool_prefix}ar) 
+    set(CMAKE_AR "${tool_prefix}ar" CACHE FILEPATH "Sming Archiver")
 
     # TODO: Only gcc or g++ is is needed, cmake can figure out the other one automatically.
     

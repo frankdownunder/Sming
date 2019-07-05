@@ -13,8 +13,6 @@
 //#define SMING_VERSION "3.8.0" // Major Minor Sub
 #include "Options.h"	//  VERSION_MAJOR VERSION_MINOR VERSION_POINT 
 
-#include <functional>
-
 #include "gdb/gdb_hooks.h"
 #include "WiringFrameworkIncludes.h"
 

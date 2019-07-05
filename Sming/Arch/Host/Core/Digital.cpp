@@ -12,11 +12,12 @@
 #include "WiringFrameworkIncludes.h"
 
 #define PIN_MAX 16
-static uint8 pinModes[PIN_MAX];
+static uint8 pinModes[PIN_MAX + 1];
 
 static inline bool checkPin(uint16_t pin)
 {
-	if(pin < 16) {
+	// Wemos D1 mini has pin 16
+	if(pin <= 16) {
 		return true;
 	} else {
 		hostmsg("BAD PIN %u", pin);

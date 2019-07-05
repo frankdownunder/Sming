@@ -1,15 +1,27 @@
 #!/bin/bash
 set -ex # exit with nonzero exit code if anything fails
 
+# Build times benefit from parallel building
+export MAKE_PARALLEL="make -j3"
+
 env
 unset SPIFFY
 unset ESPTOOL2
 
 export SMING_HOME=$TRAVIS_BUILD_DIR/Sming
 
+cd $SMING_HOME
+
 # Check coding style
 if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
- 	.travis/tools/clang/format-pr.sh;
+ 	make cs
+ 	DIFFS=$(git diff)
+ 	if [ "$DIFFS" != "" ]; then
+ 	  echo "!!! Coding Style issues Found!!!"
+ 	  echo "    Run: 'make cs' to fix them. "
+ 	  echo "$DIFFS"
+ 	  exit 1
+ 	fi
 fi
 
 # Setup ARCH SDK paths
@@ -25,24 +37,30 @@ fi
 # Full compile checks please
 export STRICT=1
 
+# Move samples and tests into directory outside of the Sming repo.
+export SMING_PROJECTS_DIR=$HOME/projects
+mkdir $SMING_PROJECTS_DIR
+mv ../samples $SMING_PROJECTS_DIR
+mv ../tests $SMING_PROJECTS_DIR
+
 # Diagnostic info
-cd $SMING_HOME
+cd $SMING_PROJECTS_DIR/samples/Basic_Blink
 make help
 make list-config
 
-# Build the framework
-make
+# This will build the Basic_Blink application and most of the framework Components
+$MAKE_PARALLEL
+
+cd $SMING_HOME
 
 if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ]; then
-	make Basic_Blink Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo LiveDebug DEBUG_VERBOSE_LEVEL=3
-	cd ../tests/HostTests
-	make flash
+	$MAKE_PARALLEL Basic_DateTime Basic_Delegates Basic_Interrupts Basic_ProgMem Basic_Serial Basic_Servo LiveDebug DEBUG_VERBOSE_LEVEL=3
+	# Build and run tests
+	export SMING_TARGET_OPTIONS='--flashfile=$(FLASH_BIN) --flashsize=$(SPI_SIZE)'
+	$MAKE_PARALLEL tests
 else
-	make samples
+	$MAKE_PARALLEL samples
 	make clean samples-clean
-	make ENABLE_CUSTOM_HEAP=1 STRICT=1
-	make Basic_Blink ENABLE_CUSTOM_HEAP=1 DEBUG_VERBOSE_LEVEL=3
-	
-	make dist-clean
-	make HttpServer_ConfigNetwork ENABLE_CUSTOM_LWIP=2 STRICT=1
+	$MAKE_PARALLEL Basic_Blink ENABLE_CUSTOM_HEAP=1 DEBUG_VERBOSE_LEVEL=3
+	$MAKE_PARALLEL HttpServer_ConfigNetwork ENABLE_CUSTOM_LWIP=2 STRICT=1
 fi
