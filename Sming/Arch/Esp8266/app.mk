@@ -10,23 +10,13 @@ LIBS += \
 	microgcc \
 	stdc++ \
 	hal \
-	phy \
-	pp \
-	net80211 \
-	wpa \
-	crypto \
-	smartconfig \
 	$(LIBMAIN)
 
 # linker flags used to generate the main object file
-LDFLAGS		= -nostdlib \
+LDFLAGS	+= \
+	-nostdlib \
 	-u call_user_start \
-	-u Cache_Read_Enable_New \
-	-u custom_crash_callback \
 	-Wl,-static \
-	-Wl,--gc-sections \
-	-Wl,-Map=$(basename $@).map \
-	-Wl,-wrap,system_restart_local 
 
 
 .PHONY: application
@@ -97,7 +87,7 @@ endif
 
 .PHONY: flash
 flash: all kill_term ##Write the rBoot boot sector, application image and (if enabled) SPIFFS image
-	$(call WriteFlash,$(FLASH_RBOOT_CHUNKS) $(FLASH_RBOOT_APP_CHUNKS) $(FLASH_SPIFFS_CHUNKS))
+	$(call WriteFlash,$(FLASH_RBOOT_BOOT_CHUNKS) $(FLASH_RBOOT_APP_CHUNKS) $(FLASH_SPIFFS_CHUNKS))
 ifeq ($(ENABLE_GDB), 1)
 	$(GDB_CMDLINE)
 else
