@@ -84,7 +84,7 @@
 
 #include "WString.h"
 
-/** @Brief Define a FlashString
+/** @brief Define a FlashString
  *  @param _name variable to identify the string
  *  @param _str content of the string
  *  @note the whole thing is word-aligned
@@ -95,7 +95,7 @@
 	DEFINE_FSTR_STRUCT(_##_name, _str);                                                                                \
 	const FlashString& _name PROGMEM = _##_name.fstr;
 
-/** @Brief Define a FlashString for local (static) use
+/** @brief Define a FlashString for local (static) use
  *  @param _name variable to identify the string
  *  @param _str content of the string
  */
@@ -146,7 +146,8 @@
  */
 #define LOAD_FSTR(_name, _fstr)                                                                                        \
 	char _name[(_fstr).size()] __attribute__((aligned(4)));                                                            \
-	memcpy_aligned(_name, (_fstr).data(), (_fstr).length());
+	memcpy_aligned(_name, (_fstr).data(), (_fstr).length());                                                           \
+	_name[(_fstr).length()] = '\0';
 
 /*
  * Define a flash string and load it into a named char[] buffer on the stack.
@@ -220,7 +221,7 @@ struct FlashString {
 	}
 
 	/** @brief Check for equality with a C-string
-	 *  @param str
+	 *  @param cstr
 	 *  @retval bool true if strings are identical
 	 *  @note loads string into a stack buffer for the comparison, no heap required
 	 */
