@@ -4,11 +4,12 @@
 #message("srcs.cmake: SMING Lists of Souce Code filenames")
 #message("-----------------------------------------------")
 
-set(FOLDER_BASE ${SMING_HOME} )
+set(FOLDER_BASE $ENV{SMING_HOME} )
 
 if(SMING_ARCH STREQUAL "Esp8266")
     set(Sming_CXX_SOURCES
         ${FOLDER_BASE}/Arch/Esp8266/Components/driver/uart.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Components/driver/SerialBuffer.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266/esp_cplusplus.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266/startup.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Core/core_esp8266_si2c.cpp
@@ -31,16 +32,17 @@ elseif(SMING_ARCH STREQUAL "Host")
 
     set(Sming_CXX_SOURCES
         ${FOLDER_BASE}/Arch/Host/Components/driver/uart.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/driver/uart_server.cpp
         ${FOLDER_BASE}/Arch/Host/Components/esp_hal/system.cpp
         ${FOLDER_BASE}/Arch/Host/Components/esp_hal/tasks.cpp
         ${FOLDER_BASE}/Arch/Host/Components/esp_hal/timer_legacy.cpp
         ${FOLDER_BASE}/Arch/Host/Components/gdbstub/gdb_syscall.cpp
-        ${FOLDER_BASE}/Arch/Host/Components/hostlib/flashmem.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/spi_flash/flashmem.cpp
         ${FOLDER_BASE}/Arch/Host/Components/hostlib/options.cpp
         ${FOLDER_BASE}/Arch/Host/Components/hostlib/sockets.cpp
         ${FOLDER_BASE}/Arch/Host/Components/hostlib/startup.cpp
-        ${FOLDER_BASE}/Arch/Host/Components/hostlib/uart_server.cpp
         ${FOLDER_BASE}/Arch/Host/Core/Digital.cpp
+        ${FOLDER_BASE}/Arch/Host/Core/HardwarePWM.cpp
         ${FOLDER_BASE}/Arch/Host/Core/HardwareTimer.cpp
         ${FOLDER_BASE}/Arch/Host/Core/Interrupts.cpp
         ${FOLDER_BASE}/Arch/Host/Platform/AccessPoint.cpp
@@ -56,7 +58,6 @@ list(APPEND Sming_CXX_SOURCES
     ${FOLDER_BASE}/Core/AtClient.cpp
     ${FOLDER_BASE}/Core/Clock.cpp
     ${FOLDER_BASE}/Core/Data/Buffer/CircularBuffer.cpp
-    ${FOLDER_BASE}/Core/Data/Buffer/SerialBuffer.cpp
     ${FOLDER_BASE}/Core/Data/CStringArray.cpp
     ${FOLDER_BASE}/Core/Data/HexString.cpp
     ${FOLDER_BASE}/Core/Data/MailMessage.cpp
@@ -147,7 +148,7 @@ set(LIBRARY_FOLDER ${FOLDER_BASE}/Libraries)
 
 
 set(Sming_C_SRCS 
-    ${FOLDER_BASE}/Arch/Esp8266/Components/spiffs/spiffs_sming.c
+    ${FOLDER_BASE}/Components/spiffs/spiffs_sming.c
     #${FOLDER_BASE}/Components/http-parser/http_parser.c
     ${FOLDER_BASE}/Components/libb64/cdecode.c
     ${FOLDER_BASE}/Components/libb64/cencode.c
@@ -200,42 +201,16 @@ endif()
 #========================================================================
 if(false)
     list(APPEND Sming_CXX_SOURCES
-        #${FOLDER_BASE}/Libraries/Adafruit_BME280_Library/Adafruit_BME280.cpp
         ${FOLDER_BASE}/Libraries/Adafruit_GFX/Adafruit_GFX.cpp
-        #${FOLDER_BASE}/Libraries/Adafruit_ST7735/Adafruit_ST7735.cpp
         ${FOLDER_BASE}/Libraries/AM2321/AM2321.cpp
         ${FOLDER_BASE}/Libraries/APA102/apa102.cpp
         ${FOLDER_BASE}/Libraries/BH1750FVI/BH1750FVI.cpp
         ${FOLDER_BASE}/Libraries/BMP180/BMP180.cpp
         ${FOLDER_BASE}/Libraries/Bounce/Bounce.cpp
-        #${FOLDER_BASE}/Libraries/DFRobotDFPlayerMini/DFRobotDFPlayerMini.cpp
-        #${FOLDER_BASE}/Libraries/DHTesp/DHTesp.cpp
         ${FOLDER_BASE}/Libraries/DS18S20/ds18s20.cpp
         ${FOLDER_BASE}/Libraries/DS3232RTC/DS3232RTC.cpp
         ${FOLDER_BASE}/Libraries/HMC5883L/HMC5883L.cpp
         ${FOLDER_BASE}/Libraries/I2Cdev/I2Cdev.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexButton.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexCheckbox.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexCrop.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexDualStateButton.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexGauge.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexGpio.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexHardware.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexHotspot.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexNumber.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexObject.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexPage.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexPicture.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexProgressBar.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexRadio.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexRtc.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexScrolltext.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexSlider.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexText.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexTimer.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexTouch.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexVariable.cpp
-        #${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion/NexWaveform.cpp
         ${FOLDER_BASE}/Libraries/LiquidCrystal/FastIO.cpp
         ${FOLDER_BASE}/Libraries/LiquidCrystal/I2CIO.cpp
         ${FOLDER_BASE}/Libraries/LiquidCrystal/LCD.cpp
@@ -263,46 +238,9 @@ if(false)
             ${FOLDER_BASE}/Libraries/Adafruit_ILI9341/Adafruit_ILI9341.cpp
             ${FOLDER_BASE}/Libraries/Adafruit_NeoPixel/Adafruit_NeoPixel.cpp
             ${FOLDER_BASE}/Libraries/Adafruit_PCD8544/Adafruit_PCD8544.cpp
-            #${FOLDER_BASE}/Libraries/Adafruit_SSD1306/Adafruit_SSD1306.cpp
             ${FOLDER_BASE}/Libraries/ArduCAM/ArduCAM.cpp
             ${FOLDER_BASE}/Libraries/ArduCAM/ArduCAMStream.cpp
             ${FOLDER_BASE}/Libraries/CapacitiveSensor/CapacitiveSensor.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Aiwa.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Argo.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Carrier.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Coolix.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Daikin.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Denon.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Dish.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Fujitsu.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_GlobalCache.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Gree.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Haier.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_JVC.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Kelvinator.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Lasertag.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_LG.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Magiquest.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Midea.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Mitsubishi.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_NEC.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Nikai.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Panasonic.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Pronto.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_RC5_RC6.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_RCMM.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Samsung.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Sanyo.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Sharp.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Sherwood.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Sony.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Toshiba.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Trotec.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/ir_Whynter.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/IRrecv.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/IRsend.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/IRtimer.cpp
-            #${FOLDER_BASE}/Libraries/IR/src/IRutils.cpp
             ${FOLDER_BASE}/Libraries/MCP23S17/MCP23S17.cpp
             ${FOLDER_BASE}/Libraries/RF24/RF24.cpp
             ${FOLDER_BASE}/Libraries/SDCard/SDCard.cpp
@@ -345,7 +283,7 @@ if(SMING_ARCH STREQUAL "Esp8266")
         ${FOLDER_BASE}/Arch/Esp8266/Components/esp_wifi/include
         ${FOLDER_BASE}/Arch/Esp8266/Components/rboot/rboot
         ${FOLDER_BASE}/Arch/Esp8266/Components/rboot/rboot/appcode
-        ${FOLDER_BASE}/Arch/Esp8266/Components/spiffs
+        ${FOLDER_BASE}/Components/spiffs
         ${FOLDER_BASE}/Components/spiffs/src
         ${FOLDER_BASE}/Arch/Esp8266/Components/esp-open-lwip/esp-open-lwip/include
         ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266/include
@@ -378,111 +316,6 @@ elseif(SMING_ARCH STREQUAL "Host")
     )
 endif()
 
-set(SmingIncludesXX 
-    ${FOLDER_BASE}/Arch/Esp8266/Components/Sdk/ESP8266_NONOS_SDK/include
-    ${FOLDER_BASE}/System
-    ${FOLDER_BASE}/Arch/Esp8266/System
-    ${FOLDER_BASE}/Wiring
-    ${FOLDER_BASE}/Arch/Esp8266/Core
-    ${FOLDER_BASE}/Arch/Esp8266/Core/Network
-    ${FOLDER_BASE}/Arch/Esp8266/Platform
-    ${FOLDER_BASE}/Platform
-
-    ${FOLDER_BASE}/Core
-    ${FOLDER_BASE}/Core/Data
-    ${FOLDER_BASE}/Core/Data/Buffer
-    ${FOLDER_BASE}/Core/Data/Stream
-    ${FOLDER_BASE}/Core/Network
-    ${FOLDER_BASE}/Core/Network/Ftp
-    ${FOLDER_BASE}/Core/Network/Http
-    ${FOLDER_BASE}/Core/Network/Http/Websocket
-    ${FOLDER_BASE}/Core/Network/Mqtt
-    ${FOLDER_BASE}/Core/Network/Ssl
-    ${FOLDER_BASE}/Core/Network/WebHelpers
-
-    ${FOLDER_BASE}/Components/http-parser
-    ${FOLDER_BASE}/Components/libb64
-    ${FOLDER_BASE}/Components/ws_parser
-    ${FOLDER_BASE}/Components/libyuarel
-
-    ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266
-    ${FOLDER_BASE}/Arch/Esp8266/Components/driver
-    ${FOLDER_BASE}/Arch/Esp8266/Components/fatfs
-    ${FOLDER_BASE}/Arch/Esp8266/Components/spiffs
-    ${FOLDER_BASE}/Components/spiffs/src
-
-    ${FOLDER_BASE}/Services/Profiling
-    ${FOLDER_BASE}/Services/HexDump
-    ${FOLDER_BASE}/Services/Yeelight
-    ${FOLDER_BASE}/Services/CommandProcessing
-
-    /opt/Sming/Sming
-    ${FOLDER_BASE}/Libraries
-    ${FOLDER_BASE}/Libraries/AM2321
-    ${FOLDER_BASE}/Libraries/APA102
-    ${FOLDER_BASE}/Libraries/Adafruit_BME280_Library
-    ${FOLDER_BASE}/Libraries/Adafruit_GFX
-    ${FOLDER_BASE}/Libraries/Adafruit_ILI9341
-    ${FOLDER_BASE}/Libraries/Adafruit_NeoPixel
-    ${FOLDER_BASE}/Libraries/Adafruit_PCD8544
-    ${FOLDER_BASE}/Libraries/Adafruit_SSD1306
-    ${FOLDER_BASE}/Libraries/Adafruit_ST7735
-    ${FOLDER_BASE}/Libraries/Adafruit_Sensor
-    ${FOLDER_BASE}/Libraries/ArduCAM
-    ${FOLDER_BASE}/Libraries/ArduinoJson
-    ${FOLDER_BASE}/Libraries/BH1750FVI
-    ${FOLDER_BASE}/Libraries/BMP180
-    ${FOLDER_BASE}/Libraries/Bounce
-    ${FOLDER_BASE}/Libraries/CapacitiveSensor
-    ${FOLDER_BASE}/Libraries/DFRobotDFPlayerMini
-    ${FOLDER_BASE}/Libraries/DHTesp
-    ${FOLDER_BASE}/Libraries/DS18S20
-    ${FOLDER_BASE}/Libraries/DS3232RTC
-    ${FOLDER_BASE}/Libraries/HMC5883L
-    ${FOLDER_BASE}/Libraries/I2Cdev
-    ${FOLDER_BASE}/Libraries/IR
-    ${FOLDER_BASE}/Libraries/ITEADLIB_Arduino_Nextion
-    ${FOLDER_BASE}/Libraries/LiquidCrystal
-    ${FOLDER_BASE}/Libraries/MCP23017
-    ${FOLDER_BASE}/Libraries/MCP23S17
-    ${FOLDER_BASE}/Libraries/MFRC522
-    ${FOLDER_BASE}/Libraries/MMA_7455
-    ${FOLDER_BASE}/Libraries/Mirf
-    ${FOLDER_BASE}/Libraries/OneWire
-    ${FOLDER_BASE}/Libraries/RCSwitch
-    ${FOLDER_BASE}/Libraries/RF24
-    ${FOLDER_BASE}/Libraries/RingBufCPP
-    ${FOLDER_BASE}/Libraries/SDCard
-    ${FOLDER_BASE}/Libraries/SI7021
-    ${FOLDER_BASE}/Libraries/Servo
-    ${FOLDER_BASE}/Libraries/SparkFun_APDS9960
-    ${FOLDER_BASE}/Libraries/TFT_ILI9163C
-    ${FOLDER_BASE}/Libraries/TM1637
-    ${FOLDER_BASE}/Libraries/Ultrasonic
-    ${FOLDER_BASE}/Libraries/WS2812
-    ${FOLDER_BASE}/Libraries/si4432
-    ${FOLDER_BASE}/Wiring/include
-
-    ${FOLDER_BASE}/System/include
-    ${FOLDER_BASE}/Wiring
-    ${FOLDER_BASE}/Libraries
-    ${FOLDER_BASE}/Core
-    ${FOLDER_BASE}/Arch/Esp8266
-    ${FOLDER_BASE}/Arch/Esp8266/System/include
-    ${FOLDER_BASE}/Components
-    ${FOLDER_BASE}/.
-    ${FOLDER_BASE}/Components/mqtt-codec/src
-    ${FOLDER_BASE}/Arch/Esp8266/Components
-    ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266/include
-    ${FOLDER_BASE}/Arch/Esp8266/Components/driver/include
-    ${FOLDER_BASE}/Arch/Esp8266/Components/rboot/rboot
-    ${FOLDER_BASE}/Arch/Esp8266/Components/rboot/rboot/appcode
-    ${FOLDER_BASE}/Arch/Esp8266/Components/esp-open-lwip/esp-open-lwip/include
-    ${FOLDER_BASE}/Arch/Esp8266/Components/gdbstub/include
-
-    ${FOLDER_BASE}/Arch/Esp8266/Components/gdbstub/appcode
-    ${FOLDER_BASE}/System/include/gdb
-)
 
 if(SMING_ARCH STREQUAL "Esp8266")
     list(APPEND SmingIncludes 

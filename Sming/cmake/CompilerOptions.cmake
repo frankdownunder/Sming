@@ -2,15 +2,12 @@
 #                         Sming Library cmake script
 #=============================================================================#
 function(AddCompilerOptions)
-    
+ 
+    message("-----AddCompilerOptions------")
 
 
-    
-    message("----------------------")
-
-
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_STANDARD_REQUIRED on)
+    set(CMAKE_CXX_STANDARD 11 PARENT_SCOPE)
+    set(CMAKE_CXX_STANDARD_REQUIRED on PARENT_SCOPE)
 
 
     set(WARNINGS 
@@ -28,6 +25,7 @@ function(AddCompilerOptions)
         -Wno-unused-variable            # disable the unused variable warnings
         -Wextra                         # superseeds -W   
         -Wundef                         # Warn if an undefined identifier is evaluated in an #if directive
+        PARENT_SCOPE
         )
 
     set(COMMON_FLAGS 
@@ -35,6 +33,7 @@ function(AddCompilerOptions)
         -fno-exceptions 
         -fno-rtti
         ${MFORCE32CompilerOption}
+        PARENT_SCOPE
         )
 
     set(CPLUSPLUSONLY_FLAGS 
@@ -48,6 +47,7 @@ function(AddCompilerOptions)
         -felide-constructors
         -ffunction-sections
         -finline-functions
+        PARENT_SCOPE
         )
 
     if(SMING_ARCH STREQUAL "Esp8266")
@@ -72,9 +72,11 @@ function(AddCompilerOptions)
             -DARCH_HOST 
             -D__WORDSIZE=32
             )
-        set(COMMON_FLAGS )
+        set(COMMON_FLAGS 
+            PARENT_SCOPE)
         set(WARNINGS 
             -Wall 
+            PARENT_SCOPE
             )
         set(CPLUSPLUSONLY_FLAGS 
                 -nostdlib
@@ -83,7 +85,9 @@ function(AddCompilerOptions)
                 -fdata-sections
                 -ffunction-sections
                 -felide-constructors
-                -Wno-reorder)
+                -Wno-reorder
+                PARENT_SCOPE
+                )
         set(MY_DEBUG_OPTIONS 
             -Wundef
             -Wpointer-arith
@@ -102,6 +106,7 @@ function(AddCompilerOptions)
             -Og
             -m32
             -Wno-deprecated-declarations
+            PARENT_SCOPE
         ) 
 
 
@@ -155,19 +160,19 @@ function(AddCompilerOptions)
     #set(CONLY_FLAGS         -DPROGMEM_L32="__attribute__((aligned(4))) __attribute__((section(\".irom.text\")))")
 
     #TODO Move these into target_compile_options
-    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wno-implicit-function-declaration -Wl,-EL -fno-inline-functions -nostdlib -std=gnu99")
-    set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -x assembler-with-cpp ")
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wno-implicit-function-declaration -Wl,-EL -fno-inline-functions -nostdlib -std=gnu99" PARENT_SCOPE)
+    set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -x assembler-with-cpp " PARENT_SCOPE)
     if(SMING_ARCH STREQUAL "Esp8266")
         set(CMAKE_EXE_LINKER_FLAGS
-            "${CMAKE_EXE_LINKER_FLAGS} -L/opt/Sming/Sming/Arch/Esp8266/Compiler/ld -L/opt/Sming/Sming/Arch/Esp8266/Components/rboot/rboot -L/opt/Sming/Sming/Arch/Esp8266/Compiler/lib -L/opt/Sming/Sming/Arch/Esp8266/Components/Sdk/ESP8266_NONOS_SDK/lib -Lout/build -nostdlib -Wl,--no-check-sections -u call_user_start -u _printf_float -u _scanf_float -Wl,-static -T/opt/Sming/Sming/Arch/Esp8266/Compiler/ld/rboot.rom0.ld  -Wl,--gc-sections -Wl,-wrap,system_restart_local ")
+            "${CMAKE_EXE_LINKER_FLAGS} -L/opt/Sming/Sming/Arch/Esp8266/Compiler/ld -L/opt/Sming/Sming/Arch/Esp8266/Components/rboot/rboot -L/opt/Sming/Sming/Arch/Esp8266/Compiler/lib -L/opt/Sming/Sming/Arch/Esp8266/Components/Sdk/ESP8266_NONOS_SDK/lib -Lout/build -nostdlib -Wl,--no-check-sections -u call_user_start -u _printf_float -u _scanf_float -Wl,-static -T/opt/Sming/Sming/Arch/Esp8266/Compiler/ld/rboot.rom0.ld  -Wl,--gc-sections -Wl,-wrap,system_restart_local " PARENT_SCOPE)
     endif()
 
     # CMAKE_C_COMPILER is not mistake, gcc for all, not g++
     set(CMAKE_CXX_LINK_EXECUTABLE
-            "<CMAKE_C_COMPILER> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> -o <TARGET> -Wl,--start-group <OBJECTS> <LINK_LIBRARIES> -Wl,--end-group")
+            "<CMAKE_C_COMPILER> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> -o <TARGET> -Wl,--start-group <OBJECTS> <LINK_LIBRARIES> -Wl,--end-group" PARENT_SCOPE)
 
     set(CMAKE_C_LINK_EXECUTABLE
-            "<CMAKE_C_COMPILER> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> -o <TARGET> -Wl,--start-group <OBJECTS> <LINK_LIBRARIES> -Wl,--end-group")
+            "<CMAKE_C_COMPILER> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> -o <TARGET> -Wl,--start-group <OBJECTS> <LINK_LIBRARIES> -Wl,--end-group" PARENT_SCOPE)
 endfunction()   
 
 function(AddDefine_CustFileBase SRCS)

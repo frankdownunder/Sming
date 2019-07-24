@@ -10,8 +10,8 @@
 //TODO find way to do this better
 #ifndef ARCH_ESP8266  
 #ifndef ARCH_HOST
-#define  ARCH_ESP8266  
-/* #undef ARCH_HOST */
+/* #undef ARCH_ESP8266 */
+#define  ARCH_HOST
 #endif
 #endif
 

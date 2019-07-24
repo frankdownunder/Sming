@@ -2,14 +2,6 @@
 if(NOT DEFINED SMING_ARCH ) # MATCHES "^$")
     set(SMING_ARCH Esp8266)
     message("Using default architecture Esp8266")
-else()
-    if(SMING_ARCH STREQUAL "Esp8266")
-        message("Using architecture Esp8266")
-    elseif(SMING_ARCH STREQUAL "Host") 
-       message("Using architecture Host")
-    else() 
-        message(FATAL_ERROR "Invalid architecture ${SMING_ARCH}")
-    endif()
 endif()
 
 
@@ -27,7 +19,14 @@ set(SMING_ARCH "Esp8266" CACHE STRING "Architecture chosen by the user at CMake 
 set_property(CACHE SMING_ARCH PROPERTY STRINGS Esp8266 Host Esp32)
 # Now cmake-gui knows to present a drop-down combo box for editing the "SMING_ARCH" cache entry, 
 # and it knows what the valid choices for this entry should be
-# TODO Validate command line entered value for SMING_ARCH
+if(SMING_ARCH STREQUAL "Esp8266")
+    message("Using architecture Esp8266")
+elseif(SMING_ARCH STREQUAL "Host") 
+    message("Using architecture Host")
+else() 
+    message(FATAL_ERROR "Invalid architecture ${SMING_ARCH}")
+endif()
+
 
 message("=============")
 
@@ -46,6 +45,13 @@ project(sming C CXX ASM)
 
 message("Options")
 message("-------")
+
+# The version number.
+set (VERSION_MAJOR 3)
+set (VERSION_MINOR 8)
+set (VERSION_POINT 1)
+message("Project: Sming, version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_POINT}")
+
 
 
 set(DEBUG_VERBOSE_LEVEL "2" CACHE STRING "Default debug verbose level is INFO, where DEBUG=3 INFO=2 WARNING=1 ERROR=0")
@@ -89,13 +95,6 @@ message("SMING_ENABLE_WPS           ${SMING_ENABLE_WPS}")
 message("SMING_SSL_DEBUG            ${SMING_SSL_DEBUG}")
 
 
-# The version number.
-set (VERSION_MAJOR 3)
-set (VERSION_MINOR 8)
-set (VERSION_POINT 1)
-message("Project: Sming, version ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_POINT}")
-
-
 
 # Apply debug settings to every source file. Unfortunately, there is no generator expression to reference the current source file :(
 function(SMING_APPLY_DEBUG_SETTINGS target)
@@ -124,7 +123,8 @@ file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
 if(EXISTS "${LOC_PATH}")
     message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
 else()
-    message("Building from CMakeLists.txt in directory ${PROJECT_BINARY_DIR}        CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}")
+    message("Building directory ${PROJECT_BINARY_DIR}")
+    message("CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}")
 endif()
 
 ### Hardcoded paths to compiler - is there a better way?
@@ -355,31 +355,14 @@ endif()
 #message("COMPONENT_SRCS  ${COMPONENT_SRCS} ${COMPONENT_ASM_SRCS} ${COMPONENT_C_SRCS}")
 
 add_library(sming  ${COMPONENT_SRCS} )
-if(debugCmakeJustTwoFiles)
-    target_sources(${PROJECT_NAME} PRIVATE ${FOLDER_BASE}/Components/http-parser/http_parser.c)
-    target_sources(${PROJECT_NAME} PRIVATE ${FOLDER_BASE}/Core/DateTime.cpp)
-else()
-    target_sources(${PROJECT_NAME} PRIVATE ${COMPONENT_C_SRCS} )
-    target_sources(${PROJECT_NAME} PRIVATE ${COMPONENT_SRCS})
-endif()
+target_sources(${PROJECT_NAME} PRIVATE ${COMPONENT_C_SRCS} )
+target_sources(${PROJECT_NAME} PRIVATE ${COMPONENT_SRCS})
 
 set_property(TARGET sming PROPERTY OUTPUT_NAME sming)
-
 
 # esp8266 include directories
 include_directories( ${SmingIncludes} )
 
-
-# and esp8266 build definitions
-        #-DARDUINO_ESP8266_GENERIC  
-        #@-DARDUINO_ARCH_ESP8266 \"-DARDUINO_BOARD=\"ESP8266_GENERIC\"\" 
-        #@-DARDUINO_BOARD="ESP8266_WEMOS_D1MINI"
-        #-DARDUINO_ESP8266_WEMOS_D1MINI
-
-
-
-# some other options and link libraries
-#target_compile_options(sming PUBLIC -U__STRICT_ANSI__)
 
 if(ENABLE_SSL)
     #TODO complete this
@@ -436,11 +419,8 @@ target_compile_options(sming PUBLIC $<$<COMPILE_LANGUAGE:CXX>:${CPLUSPLUSONLY_FL
 
 message("CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 
-#target_compile_options(sming PUBLIC [=[-DPROGMEM_L32="__attribute__((aligned(4)))]=] [=[__attribute__((section(\".irom.text\")))"]=])
-
 
 #target_link_libraries(sming PUBLIC microc microgcc hal phy pp net80211 mqttc wpa crypto lwip_open main wps espnow smartconfig airkiss wpa2 stdc++ m c gcc)
-
 
 
 set(ARG_CACHE_FILE  "${PROJECT_SOURCE_DIR}/BuildNumberCache.txt")
