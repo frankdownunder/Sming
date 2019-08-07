@@ -35,4 +35,10 @@ COMPONENT_DEPENDS := \
 	libc \
 	lwip \
 	spi_flash \
-	vflash
+	vflash \
+	rboot
+
+# => Platform WiFi
+COMPONENT_VARS := \
+	ENABLE_WPS \
+	ENABLE_SMART_CONFIG

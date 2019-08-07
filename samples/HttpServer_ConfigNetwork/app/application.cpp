@@ -19,7 +19,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 {
 	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
 	auto& vars = tmpl->variables();
-	response.sendTemplate(tmpl); // will be automatically deleted
+	response.sendNamedStream(tmpl); // will be automatically deleted
 }
 
 int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpResponse& response)
@@ -61,7 +61,7 @@ int onIpConfig(HttpServerConnection& connection, HttpRequest& request, HttpRespo
 		vars["gateway"] = "192.168.1.1";
 	}
 
-	response.sendTemplate(tmpl); // will be automatically deleted
+	response.sendNamedStream(tmpl); // will be automatically deleted
 
 	return 0;
 }
@@ -155,7 +155,7 @@ void onAjaxConnect(HttpRequest& request, HttpResponse& response)
 			connectionTimer.initializeMs(1200, makeConnection).startOnce();
 		} else {
 			json["connected"] = WifiStation.isConnected();
-			debugf("Network already selected. Current status: %s", WifiStation.getConnectionStatusName());
+			debugf("Network already selected. Current status: %s", WifiStation.getConnectionStatusName().c_str());
 		}
 	}
 
@@ -194,7 +194,7 @@ void startServers()
 	startWebServer();
 }
 
-void networkScanCompleted(bool succeeded, BssList list)
+void networkScanCompleted(bool succeeded, BssList& list)
 {
 	if(succeeded) {
 		for(unsigned i = 0; i < list.count(); i++)

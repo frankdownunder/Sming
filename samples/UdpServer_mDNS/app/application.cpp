@@ -59,7 +59,7 @@ void onIndex(HttpRequest& request, HttpResponse& response)
 	TemplateFileStream* tmpl = new TemplateFileStream("index.html");
 	auto& vars = tmpl->variables();
 	//vars["counter"] = String(counter);
-	response.sendTemplate(tmpl); // this template object will be deleted automatically
+	response.sendNamedStream(tmpl); // this template object will be deleted automatically
 }
 
 void onFile(HttpRequest& request, HttpResponse& response)
@@ -84,7 +84,7 @@ void startWebServer()
 	Serial.println("==============================\r\n");
 }
 
-void connectFail(String ssid, uint8_t ssid_len, uint8_t bssid[6], uint8_t reason)
+void connectFail(const String& ssid, const MACAddress& bssid, WifiDisconnectReason reason)
 {
 	debugf("I'm NOT CONNECTED!");
 }

@@ -50,10 +50,7 @@
 #include "Network/TcpConnection.h"
 #include "Network/UdpConnection.h"
 #include "Network/Url.h"
-
-#ifdef ARCH_ESP8266
-#include "Network/rBootHttpUpdate.h"
-#endif
+#include "Network/RbootHttpUpdater.h"
 
 #include "Data/Stream/FileStream.h"
 #include "Data/Stream/TemplateFileStream.h"
