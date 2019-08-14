@@ -14,7 +14,7 @@
 #include "Platform/WDT.h"
 #include "NetUtils.h"
 #include "WString.h"
-#include "IPAddress.h"
+#include "IpAddress.h"
 
 #include "Options.h"
 
@@ -82,7 +82,7 @@ bool TcpConnection::connect(const String& server, int port, bool useSsl, uint32_
 	return (dnslook == ERR_OK) ? internalConnect(addr, port) : false;
 }
 
-bool TcpConnection::connect(IPAddress addr, uint16_t port, bool useSsl, uint32_t sslOptions)
+bool TcpConnection::connect(IpAddress addr, uint16_t port, bool useSsl, uint32_t sslOptions)
 {
 	if(tcp == nullptr) {
 		initialize(tcp_new());
@@ -391,7 +391,7 @@ void TcpConnection::flush()
 	}
 }
 
-bool TcpConnection::internalConnect(IPAddress addr, uint16_t port)
+bool TcpConnection::internalConnect(IpAddress addr, uint16_t port)
 {
 	NetUtils::FixNetworkRouting();
 	err_t res = tcp_connect(tcp, addr, port, [](void* arg, tcp_pcb* tcp, err_t err) -> err_t {
@@ -632,7 +632,7 @@ void TcpConnection::internalOnError(err_t err)
 void TcpConnection::internalOnDnsResponse(const char* name, LWIP_IP_ADDR_T* ipaddr, int port)
 {
 	if(ipaddr != nullptr) {
-		IPAddress ip = *ipaddr;
+		IpAddress ip = *ipaddr;
 		debug_d("DNS record found: %s = %s", name, ip.toString().c_str());
 
 		internalConnect(ip, port);

@@ -1,6 +1,6 @@
-***************************
+*****************
 From v3.8 to v4.0
-***************************
+*****************
 
 Summary
 =======
@@ -9,8 +9,11 @@ With Sming version 4.0 there are some backwards
 incompatible changes. This page is provided to help with migrating your
 applications.
 
-You can find more detailed information in the
-:doc:`/_inc/Sming/building` readme.
+In particular, the build system has changed so the process is now driven from the
+project directory.
+
+See :doc:`/_inc/Sming/building` for detailed information and a list of known issues.
+
 
 Header files
 ============
@@ -129,16 +132,20 @@ WiFi Classes
 Additions
 ---------
 
-New class to handle MAC addresses: :source:`Sming/Wiring/MACAddress.h`.
+New class to handle MAC addresses: :source:`Sming/Wiring/MacAddress.h`.
 
-:source:`Sming/Platform/StationClass.h`
----------------------------------------
+:source:`Sming/Platform/Station.h`
+----------------------------------
 
 -  `getConnectionStatusName()` returns String instead of `char*`
 -  `EStationConnectionStatus` renamed to `StationConnectionStatus`
 
-:source:`Sming/Platform/WifiEventsClass.h`
-------------------------------------------
+:source:`Sming/Platform/WifiEvents.h`
+-------------------------------------
 
 - Callback handler parameter lists have changed
 
+Deprecated / Changed types
+==========================
+
+Deprecated types will generate a compiler warning. See `Deprecated List <../api/deprecated.html>`_.
