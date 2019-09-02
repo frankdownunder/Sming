@@ -109,27 +109,22 @@ int HttpServerConnection::onHeadersComplete(const HttpHeaders& headers)
 			contentType = contentType.substring(0, endPos);
 		}
 
-		String majorType = contentType.substring(0, contentType.indexOf('/'));
-		majorType += "/*";
-
 		// Content-Type for exact type: application/json
-		// Wildcard type for application: application/*
-		// Wildcard type for the rest*
-
-		Vector<String> types;
-		types.add(contentType);
-		types.add(majorType);
-		types.add(String('*'));
-
-		for(unsigned i = 0; i < types.count(); i++) {
-			const String& type = types[i];
-			if(bodyParsers->contains(type)) {
-				bodyParser = (*bodyParsers)[type];
-				break;
+		int i = bodyParsers->indexOf(contentType);
+		if(i < 0) {
+			// Wildcard type for application: application/*
+			contentType.setLength(contentType.indexOf('/') + 1);
+			contentType += '*';
+			i = bodyParsers->indexOf(contentType);
+			if(i < 0) {
+				// Wildcard type for the rest*
+				i = bodyParsers->indexOf(String('*'));
 			}
 		}
 
-		if(bodyParser) {
+		if(i >= 0) {
+			bodyParser = bodyParsers->valueAt(i);
+			assert(bodyParser != nullptr);
 			bodyParser(request, nullptr, PARSE_DATASTART);
 		}
 	}
@@ -153,15 +148,17 @@ int HttpServerConnection::onBody(const char* at, size_t length)
 	return 0;
 }
 
-void HttpServerConnection::onHttpError(http_errno error)
+bool HttpServerConnection::onHttpError(http_errno error)
 {
 	response.code = HTTP_STATUS_BAD_REQUEST;
 	int hasError = onMessageComplete(nullptr);
 	if(hasError) {
-		sendError(httpGetErrorName(error));
+		sendError();
 	}
 
 	HttpConnection::onHttpError(error);
+
+	return true;
 }
 
 void HttpServerConnection::onReadyToSendData(TcpConnectionEvent sourceEvent)
@@ -310,7 +307,7 @@ void HttpServerConnection::sendError(const String& message, enum http_status cod
 	response.setContentType(MIME_HTML);
 
 	String html = F("<H2 color='#444'>");
-	html += message ? message : httpGetStatusText(response.code);
+	html += message ? message : httpGetStatusText((enum http_status)response.code);
 	html += F("</H2>");
 	response.headers[HTTP_HEADER_CONTENT_LENGTH] = html.length();
 	response.headers[HTTP_HEADER_CONNECTION] = _F("close");
