@@ -11,6 +11,7 @@ if(SMING_ARCH STREQUAL "Esp8266")
         ${FOLDER_BASE}/Arch/Esp8266/Components/driver/uart.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Components/driver/SerialBuffer.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266/esp_cplusplus.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266/libc.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266/startup.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Core/core_esp8266_si2c.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Core/Digital.cpp
@@ -18,21 +19,25 @@ if(SMING_ARCH STREQUAL "Esp8266")
         ${FOLDER_BASE}/Arch/Esp8266/Core/HardwarePWM.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Core/HardwareTimer.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Core/Interrupts.cpp
-        ${FOLDER_BASE}/Arch/Esp8266/Core/Network/rBootHttpUpdate.cpp
+            #${FOLDER_BASE}/Arch/Esp8266/Core/Network/rBootHttpUpdate.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Core/SPI.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Core/SPISoft.cpp
-        ${FOLDER_BASE}/Arch/Esp8266/Platform/AccessPoint.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Platform/AccessPointImpl.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Platform/RTC.cpp
-        ${FOLDER_BASE}/Arch/Esp8266/Platform/Station.cpp
-        ${FOLDER_BASE}/Arch/Esp8266/Platform/WifiEvents.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Platform/StationImpl.cpp
+        ${FOLDER_BASE}/Arch/Esp8266/Platform/WifiEventsImpl.cpp
         ${FOLDER_BASE}/Arch/Esp8266/Platform/WifiSniffer.cpp
         #PARENT_SCOPE
     )
 elseif(SMING_ARCH STREQUAL "Host")
 
     set(Sming_CXX_SOURCES
+        ${FOLDER_BASE}/Arch/Esp8266/Components/driver/SerialBuffer.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/driver/adc.cpp
         ${FOLDER_BASE}/Arch/Host/Components/driver/uart.cpp
         ${FOLDER_BASE}/Arch/Host/Components/driver/uart_server.cpp
+
+        ${FOLDER_BASE}/Arch/Host/Components/esp_hal/random.cpp
         ${FOLDER_BASE}/Arch/Host/Components/esp_hal/system.cpp
         ${FOLDER_BASE}/Arch/Host/Components/esp_hal/tasks.cpp
         ${FOLDER_BASE}/Arch/Host/Components/esp_hal/timer_legacy.cpp
@@ -41,14 +46,17 @@ elseif(SMING_ARCH STREQUAL "Host")
         ${FOLDER_BASE}/Arch/Host/Components/hostlib/options.cpp
         ${FOLDER_BASE}/Arch/Host/Components/hostlib/sockets.cpp
         ${FOLDER_BASE}/Arch/Host/Components/hostlib/startup.cpp
+        ${FOLDER_BASE}/Arch/Host/Components/hostlib/threads.cpp
         ${FOLDER_BASE}/Arch/Host/Core/Digital.cpp
+        ${FOLDER_BASE}/Arch/Host/Core/DigitalHooks.cpp
         ${FOLDER_BASE}/Arch/Host/Core/HardwarePWM.cpp
         ${FOLDER_BASE}/Arch/Host/Core/HardwareTimer.cpp
         ${FOLDER_BASE}/Arch/Host/Core/Interrupts.cpp
-        ${FOLDER_BASE}/Arch/Host/Platform/AccessPoint.cpp
+        ${FOLDER_BASE}/Arch/Host/Platform/AccessPointImpl.cpp
         ${FOLDER_BASE}/Arch/Host/Platform/RTC.cpp
-        ${FOLDER_BASE}/Arch/Host/Platform/Station.cpp
-        ${FOLDER_BASE}/Arch/Host/Platform/WifiEvents.cpp
+        ${FOLDER_BASE}/Arch/Host/Platform/StationImpl.cpp
+        ${FOLDER_BASE}/Arch/Host/Platform/WifiEventsImpl.cpp
+        ${FOLDER_BASE}/Components/rboot/host/rboot.cpp
         #PARENT_SCOPE
         )
 endif()
@@ -74,6 +82,7 @@ list(APPEND Sming_CXX_SOURCES
     ${FOLDER_BASE}/Core/Data/Stream/MultipartStream.cpp
     ${FOLDER_BASE}/Core/Data/Stream/MultiStream.cpp
     ${FOLDER_BASE}/Core/Data/Stream/QuotedPrintableOutputStream.cpp
+    ${FOLDER_BASE}/Core/Data/Stream/RbootOutputStream.cpp
     ${FOLDER_BASE}/Core/Data/Stream/ReadWriteStream.cpp
     ${FOLDER_BASE}/Core/Data/Stream/TemplateStream.cpp
     ${FOLDER_BASE}/Core/Data/Stream/UrlencodedOutputStream.cpp
@@ -104,6 +113,7 @@ list(APPEND Sming_CXX_SOURCES
     ${FOLDER_BASE}/Core/Network/MqttClient.cpp
     ${FOLDER_BASE}/Core/Network/NetUtils.cpp
     ${FOLDER_BASE}/Core/Network/NtpClient.cpp
+    ${FOLDER_BASE}/Core/Network/RbootHttpUpdater.cpp
     ${FOLDER_BASE}/Core/Network/SmtpClient.cpp
     ${FOLDER_BASE}/Core/Network/Ssl/SslFingerprints.cpp
     ${FOLDER_BASE}/Core/Network/Ssl/SslValidator.cpp
@@ -121,9 +131,13 @@ list(APPEND Sming_CXX_SOURCES
     ${FOLDER_BASE}/Core/SystemClock.cpp
     ${FOLDER_BASE}/Core/Timer.cpp
     ${FOLDER_BASE}/Core/Wire.cpp
+    ${FOLDER_BASE}/Platform/AccessPoint.cpp
+    ${FOLDER_BASE}/Platform/BssInfo.cpp
+    ${FOLDER_BASE}/Platform/Station.cpp
     ${FOLDER_BASE}/Platform/OsMessageInterceptor.cpp
     ${FOLDER_BASE}/Platform/System.cpp
     ${FOLDER_BASE}/Platform/WDT.cpp
+    ${FOLDER_BASE}/Platform/WifiEvents.cpp
     ${FOLDER_BASE}/Services/CommandProcessing/CommandDelegate.cpp
     ${FOLDER_BASE}/Services/CommandProcessing/CommandExecutor.cpp
     ${FOLDER_BASE}/Services/CommandProcessing/CommandHandler.cpp
@@ -134,13 +148,16 @@ list(APPEND Sming_CXX_SOURCES
     ${FOLDER_BASE}/System/stringconversion.cpp
     ${FOLDER_BASE}/System/stringutil.cpp
     ${FOLDER_BASE}/Wiring/FakePgmSpace.cpp
-    ${FOLDER_BASE}/Wiring/IPAddress.cpp
+    ${FOLDER_BASE}/Wiring/MacAddress.cpp
+    ${FOLDER_BASE}/Wiring/IpAddress.cpp
     ${FOLDER_BASE}/Wiring/Print.cpp
     ${FOLDER_BASE}/Wiring/SplitString.cpp
     ${FOLDER_BASE}/Wiring/Stream.cpp
     ${FOLDER_BASE}/Wiring/WMath.cpp
     ${FOLDER_BASE}/Wiring/WShift.cpp
     ${FOLDER_BASE}/Wiring/WString.cpp
+    ${FOLDER_BASE}/Components/MultipartParser/HttpMultipartResource.cpp
+    ${FOLDER_BASE}/Components/MultipartParser/MultipartParser.cpp
 )
 
 
@@ -177,7 +194,7 @@ else(SMING_ARCH STREQUAL "Host")
         ${FOLDER_BASE}/Arch/Host/Components/esp_hal/clk.c
         ${FOLDER_BASE}/Arch/Host/Components/esp_hal/libc.c
         ${FOLDER_BASE}/Arch/Host/Components/esp_hal/sleep.c
-        ${FOLDER_BASE}/Arch/Host/Components/esp_wifi/esp_wifi.c
+        #${FOLDER_BASE}/Arch/Host/Components/esp_wifi/esp_wifi.c
         ${FOLDER_BASE}/Arch/Host/Components/gdbstub/gdbstub.c
         ${FOLDER_BASE}/Arch/Host/Components/heap/heap.c
         ${FOLDER_BASE}/Arch/Host/Components/hostlib/except.c
@@ -281,12 +298,13 @@ if(SMING_ARCH STREQUAL "Esp8266")
         ${FOLDER_BASE}/Arch/Esp8266/Components/spi_flash/include
         ${FOLDER_BASE}/Arch/Esp8266/Components/driver/include
         ${FOLDER_BASE}/Arch/Esp8266/Components/esp_wifi/include
-        ${FOLDER_BASE}/Arch/Esp8266/Components/rboot/rboot
-        ${FOLDER_BASE}/Arch/Esp8266/Components/rboot/rboot/appcode
+        ${FOLDER_BASE}/Components/rboot/rboot
+        ${FOLDER_BASE}/Components/rboot/rboot/appcode
         ${FOLDER_BASE}/Components/spiffs
         ${FOLDER_BASE}/Components/spiffs/src
         ${FOLDER_BASE}/Arch/Esp8266/Components/esp-open-lwip/esp-open-lwip/include
         ${FOLDER_BASE}/Arch/Esp8266/Components/esp8266/include
+        ${FOLDER_BASE}/Components/MultipartParser
         )
 elseif(SMING_ARCH STREQUAL "Host")
     set(SmingIncludes
@@ -313,6 +331,7 @@ elseif(SMING_ARCH STREQUAL "Host")
         ${FOLDER_BASE}/Arch/Host/Components/lwip/lwip/contrib/ports/unix/port/include
         ${FOLDER_BASE}/Arch/Esp8266/Components/spiffs
         ${FOLDER_BASE}/Components/spiffs/src
+        ${FOLDER_BASE}/Components/MultipartParser
     )
 endif()
 
